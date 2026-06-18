@@ -65,13 +65,14 @@ author_profile: false
 <div id="sp-toast" class="sp-toast"></div>
 
 <script>
-const BASE = 'https://cialdecompatibili-netizen.github.io/cmspush';
+const BASE = window.location.origin + (window.SITE_BASE || '');
+const CART_KEY = (window.SITE_BASE || 'default') + '_cart';
 
 function getCart() {
-  try { return JSON.parse(sessionStorage.getItem('cmspush_cart') || '[]'); } catch(e){ return []; }
+  try { return JSON.parse(sessionStorage.getItem(CART_KEY) || '[]'); } catch(e){ return []; }
 }
 function saveCart(cart) {
-  sessionStorage.setItem('cmspush_cart', JSON.stringify(cart));
+  sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
   updateCartBadge();
 }
 function updateCartBadge() {

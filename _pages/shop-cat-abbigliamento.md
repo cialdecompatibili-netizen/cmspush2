@@ -86,11 +86,12 @@ async function loadCat() {
   }
 }
 function aggiungiCarrello(slug, title, price) {
-  let cart = JSON.parse(localStorage.getItem('cmspush_cart') || '[]');
+  const CART_KEY = (window.SITE_BASE || 'default') + '_cart';
+  let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || '[]');
   const idx = cart.findIndex(i => i.slug === slug);
   if (idx >= 0) cart[idx].qty++;
   else cart.push({slug, title, price, qty: 1});
-  localStorage.setItem('cmspush_cart', JSON.stringify(cart));
+  sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
   const tot = cart.reduce((s,i) => s + i.qty, 0);
   alert(`✅ "${title}" aggiunto al carrello (tot. ${tot} articoli)`);
 }

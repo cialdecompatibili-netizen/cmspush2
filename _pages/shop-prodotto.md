@@ -319,10 +319,12 @@ function changeQty(delta) {
 }
 
 function getCart() {
-  try { return JSON.parse(sessionStorage.getItem('cmspush_cart') || '[]'); } catch(e){ return []; }
+  const CART_KEY = (window.SITE_BASE || 'default') + '_cart';
+  try { return JSON.parse(sessionStorage.getItem(CART_KEY) || '[]'); } catch(e){ return []; }
 }
 function saveCart(cart) {
-  sessionStorage.setItem('cmspush_cart', JSON.stringify(cart));
+  const CART_KEY = (window.SITE_BASE || 'default') + '_cart';
+  sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
 function addToCart() {
