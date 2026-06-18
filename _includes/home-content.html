@@ -56,7 +56,7 @@
       <div class="w-full md:w-1/2">
         <div class="w-full h-auto overflow-hidden rounded-md shadow-xl sm:rounded-xl bg-gray-800 p-4" style="min-height:280px">
           <div style="background:#1e2130;border-radius:8px;overflow:hidden">
-            <div style="background:#151824;padding:10fapx 14px;display:flex;gap:6px">
+            <div style="background:#151824;padding:10px 14px;display:flex;gap:6px">
               <span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;display:inline-block"></span>
               <span style="width:10px;height:10px;border-radius:50%;background:#febc2e;display:inline-block"></span>
               <span style="width:10px;height:10px;border-radius:50%;background:#28c840;display:inline-block"></span>
@@ -121,54 +121,119 @@
 </section>
 
 <!-- FEATURES -->
-<section class="py-20 bg-white" id="features">
-  <div class="container max-w-6xl mx-auto">
+<section class="py-20 bg-gray-50" id="features">
+  <div class="container max-w-6xl mx-auto px-8">
     <h2 class="text-4xl font-bold tracking-tight text-center">Features principali</h2>
     <p class="mt-2 text-lg text-center text-gray-600">Tutto quello che ti serve per gestire un sito Jekyll.</p>
     <div class="grid grid-cols-4 gap-8 mt-10 sm:grid-cols-8 lg:grid-cols-12 sm:px-8 xl:px-0">
-
-      <div class="relative flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-gray-100 sm:rounded-xl">
+      <div class="relative flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-white shadow-sm sm:rounded-xl">
         <div class="p-3 text-white bg-indigo-500 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
         </div>
         <h4 class="text-xl font-medium text-gray-700">Editor articoli</h4>
+        <p class="text-sm text-center text-gray-500">Markdown o HTML grezzo, categorie, tag, data pubblicazione.</p>
       </div>
-
-      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-gray-100 sm:rounded-xl">
+      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-white shadow-sm sm:rounded-xl">
         <div class="p-3 text-white bg-indigo-500 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         </div>
         <h4 class="text-xl font-medium text-gray-700">Gestione pagine</h4>
+        <p class="text-sm text-center text-gray-500">Crea, modifica e cancella pagine con title e description SEO.</p>
       </div>
-
-      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-gray-100 sm:rounded-xl">
+      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-white shadow-sm sm:rounded-xl">
         <div class="p-3 text-white bg-indigo-500 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
         </div>
         <h4 class="text-xl font-medium text-gray-700">9 skin Minimal Mistakes</h4>
+        <p class="text-sm text-center text-gray-500">Cambia il tema con un click, anteprima immediata sul sito.</p>
       </div>
-
-      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-gray-100 sm:rounded-xl">
+      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-white shadow-sm sm:rounded-xl">
         <div class="p-3 text-white bg-indigo-500 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
         </div>
         <h4 class="text-xl font-medium text-gray-700">Menu e categorie</h4>
+        <p class="text-sm text-center text-gray-500">Dropdown personalizzabili via YAML, nessuna riga di codice.</p>
       </div>
-
-      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-gray-100 sm:rounded-xl">
+      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-white shadow-sm sm:rounded-xl">
         <div class="p-3 text-white bg-indigo-500 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         </div>
-        <h4 class="text-xl font-medium text-gray-700">Auto-update con 1 click</h4>
+        <h4 class="text-xl font-medium text-gray-700">Auto-update 1 click</h4>
+        <p class="text-sm text-center text-gray-500">Il CMS si aggiorna da solo direttamente dal pannello.</p>
       </div>
-
-      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-gray-100 sm:rounded-xl">
+      <div class="flex flex-col items-center justify-between col-span-4 px-8 py-12 space-y-4 bg-white shadow-sm sm:rounded-xl">
         <div class="p-3 text-white bg-indigo-500 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
         </div>
-        <h4 class="text-xl font-medium text-gray-700">Impostazioni sito complete</h4>
+        <h4 class="text-xl font-medium text-gray-700">Shop integrato</h4>
+        <p class="text-sm text-center text-gray-500">Catalogo prodotti, categorie shop e carrello già pronti.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="py-20 bg-white" id="pricing">
+  <div class="container max-w-5xl mx-auto px-8">
+    <h2 class="text-4xl font-bold tracking-tight text-center text-gray-900">Un prezzo. Tutto incluso.</h2>
+    <p class="mt-3 text-lg text-center text-gray-500 mb-12">Nessun abbonamento, nessuna sorpresa. Paghi una volta e usi per sempre.</p>
+    <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+
+      <!-- Piano Base -->
+      <div class="flex flex-col flex-1 max-w-sm p-8 bg-gray-50 rounded-2xl border border-gray-200">
+        <p class="text-sm font-semibold tracking-widest text-gray-400 uppercase">Base</p>
+        <div class="flex items-end gap-1 mt-4">
+          <span class="text-5xl font-extrabold text-gray-900">€9</span>
+          <span class="text-gray-400 mb-2">una tantum</span>
+        </div>
+        <p class="mt-3 text-gray-500 text-sm">Perfetto per un blog personale o sito vetrina.</p>
+        <ul class="mt-6 space-y-3 flex-1">
+          <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500 font-bold">✓</span> Pannello CMS completo</li>
+          <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500 font-bold">✓</span> Editor articoli e pagine</li>
+          <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500 font-bold">✓</span> 9 skin tema</li>
+          <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500 font-bold">✓</span> Auto-update</li>
+          <li class="flex items-center gap-2 text-sm text-gray-400"><span>✗</span> Shop e prodotti</li>
+        </ul>
+        <a href="#" class="mt-8 inline-flex justify-center items-center px-6 py-3 rounded-full border border-indigo-600 text-indigo-600 font-bold hover:bg-indigo-50">Acquista Base</a>
       </div>
 
+      <!-- Piano Pro (highlighted) -->
+      <div class="flex flex-col flex-1 max-w-sm p-8 bg-indigo-600 rounded-2xl text-white shadow-xl">
+        <div class="flex justify-between items-center">
+          <p class="text-sm font-semibold tracking-widest uppercase opacity-80">Pro</p>
+          <span class="text-xs bg-yellow-400 text-gray-900 font-bold px-3 py-1 rounded-full">Più venduto</span>
+        </div>
+        <div class="flex items-end gap-1 mt-4">
+          <span class="text-5xl font-extrabold">€19</span>
+          <span class="opacity-70 mb-2">una tantum</span>
+        </div>
+        <p class="mt-3 opacity-80 text-sm">Blog + shop + tutto quello che ti serve per vendere online.</p>
+        <ul class="mt-6 space-y-3 flex-1">
+          <li class="flex items-center gap-2 text-sm"><span class="text-yellow-300 font-bold">✓</span> Tutto del piano Base</li>
+          <li class="flex items-center gap-2 text-sm"><span class="text-yellow-300 font-bold">✓</span> Shop con catalogo prodotti</li>
+          <li class="flex items-center gap-2 text-sm"><span class="text-yellow-300 font-bold">✓</span> Categorie shop e carrello</li>
+          <li class="flex items-center gap-2 text-sm"><span class="text-yellow-300 font-bold">✓</span> Home page one-page inclusa</li>
+          <li class="flex items-center gap-2 text-sm"><span class="text-yellow-300 font-bold">✓</span> Supporto prioritario</li>
+        </ul>
+        <a href="#" class="mt-8 inline-flex justify-center items-center px-6 py-3 rounded-full bg-white text-indigo-600 font-bold hover:bg-indigo-50">Acquista Pro — €19</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section class="py-20 bg-gray-900 text-white text-center">
+  <div class="max-w-2xl mx-auto px-8">
+    <h2 class="text-4xl font-extrabold mb-4">Pronto a iniziare?</h2>
+    <p class="text-gray-400 text-lg mb-8">Setup in 5 minuti. Nessuna carta di credito per la demo.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{{ '/admin/' | relative_url }}" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-indigo-500 rounded-full hover:bg-indigo-400">
+        Prova il CMS gratis
+      </a>
+      <a href="#pricing" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-indigo-400 border border-indigo-500 rounded-full hover:bg-indigo-900">
+        Vedi i prezzi
+      </a>
     </div>
   </div>
 </section>
