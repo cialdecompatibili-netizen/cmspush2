@@ -1,9 +1,9 @@
 related_posts: 3
-title: CMSPush
+title: CMSPushScale
 baseurl: "/onepagecmspush"
 url: "https://cialdecompatibili-netizen.github.io"
-email:
-description: >-
+email: description: >-
+  Un sito Jekyll con CMS integrato, gestito da CMSPush.
   Un sito Jekyll con CMS integrato, gestito da CMSPush.
 twitter_username: username
 github_username: username
@@ -105,3 +105,5 @@ category_archive:
 tag_archive:
   type: liquid
   path: /tags/
+
+cms_homepage: 
