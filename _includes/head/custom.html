@@ -247,20 +247,21 @@ document.addEventListener('DOMContentLoaded', function(){
     follow.parentNode.insertBefore(custom, follow.nextSibling);
   }
 
-  // --- DROPDOWN SHOP ---
+  // --- DROPDOWN SHOP (generato da _data/shop_nav.yml via Liquid) ---
+  var shopCats = [{% for item in site.data.shop_nav.categories %}{"title":"{{ item.title }}","url":"{{ item.url | relative_url }}"}{% unless forloop.last %},{% endunless %}{% endfor %}];
+  var shopFeatured = [{% for item in site.data.shop_nav.featured %}{"title":"{{ item.title }}","url":"{{ item.url | relative_url }}"}{% unless forloop.last %},{% endunless %}{% endfor %}];
+
   var links = document.querySelectorAll('.greedy-nav .visible-links a, .greedy-nav .hidden-links a');
   links.forEach(function(a){
     if(a.textContent.trim() === 'Shop'){
       var li = a.parentElement;
       li.classList.add('has-dropdown');
+      var catHTML = shopCats.map(function(i){ return '<a href="'+i.url+'">'+i.title+'</a>'; }).join('');
+      var featHTML = shopFeatured.length ? '<div class="dropdown-sep"></div><div class="dropdown-label">In evidenza</div>' + shopFeatured.map(function(i){ return '<a href="'+i.url+'">'+i.title+'</a>'; }).join('') : '';
       li.innerHTML = '<a href="' + a.href + '">Shop</a>' +
         '<div class="dropdown-menu">' +
           '<div class="dropdown-label">Categorie</div>' +
-          '<a href="{{ "/shop/" | relative_url }}">📦 Tutti i prodotti</a>' +
-          '<a href="{{ "/shop/categoria/abbigliamento/" | relative_url }}">👕 Abbigliamento</a>' +
-          '<div class="dropdown-sep"></div>' +
-          '<div class="dropdown-label">Prodotto demo</div>' +
-          '<a href="{{ "/shop/maglietta-dr-sorriso/" | relative_url }}">🛒 Maglietta Dr. Sorriso</a>' +
+          catHTML + featHTML +
         '</div>';
     }
   });

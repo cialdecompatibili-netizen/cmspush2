@@ -1,0 +1,12 @@
+# Voci del dropdown Shop nella navbar
+# Editabile dall'admin — si riflette automaticamente sul sito
+
+categories:
+  - title: "📦 Tutti i prodotti"
+    url: "/shop/"
+  - title: "👕 Abbigliamento"
+    url: "/shop/categoria/abbigliamento/"
+
+featured:
+  - title: "🛒 Maglietta Dr. Sorriso"
+    url: "/shop/maglietta-dr-sorriso/"
