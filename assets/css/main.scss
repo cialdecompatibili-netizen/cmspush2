@@ -1,0 +1,273 @@
+---
+# Front matter vuoto obbligatorio per Jekyll
+---
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
+@import "minimal-mistakes";
+
+/* ============================================================
+   TIPOGRAFIA FLUIDA
+   ============================================================ */
+
+h1, .page__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 0.5em;
+}
+h2 {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-top: 2em;
+  margin-bottom: 0.4em;
+}
+h3 {
+  font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.3;
+  margin-top: 1.6em;
+  margin-bottom: 0.35em;
+}
+h4, h5, h6 {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-weight: 500;
+  line-height: 1.4;
+}
+body {
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.9;
+  color: #3a3a3a;
+  -webkit-font-smoothing: antialiased;
+  background: #ffffff !important;
+}
+.initial-content, #main, .page, .page__inner-wrap,
+.page__content, .archive, .sidebar, .sidebar__right {
+  background: #ffffff !important;
+}
+.page__content p, .page__content li {
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.9;
+  color: #3a3a3a;
+  margin-bottom: 1.4em;
+}
+.page__content h2, .page__content h3, .page__content h4 {
+  margin-top: 2.2em;
+  margin-bottom: 0.5em;
+}
+.author__name {
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: 500;
+}
+.author__bio {
+  font-size: clamp(0.88rem, 1.4vw, 1rem);
+  line-height: 1.75;
+  color: #555;
+}
+.archive__item-title {
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 0.3em;
+}
+.archive__item-excerpt {
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  line-height: 1.8;
+  color: #555;
+}
+.archive__subtitle {
+  font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 400;
+}
+.greedy-nav a {
+  font-size: clamp(0.82rem, 1.3vw, 0.93rem);
+  letter-spacing: 0.05em;
+  font-weight: 400;
+}
+.masthead {
+  border-bottom: 1px solid #e8e8e8 !important;
+  box-shadow: none !important;
+}
+.greedy-nav {
+  background: #fff !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+.greedy-nav a.site-title,
+.greedy-nav .visible-links a { color: #111 !important; }
+.greedy-nav .visible-links a:hover { color: #555 !important; }
+.greedy-nav button { background: transparent !important; color: #111 !important; }
+.page__meta, .page__meta-sep, .breadcrumbs {
+  font-size: clamp(0.78rem, 1.2vw, 0.88rem);
+  color: #888;
+}
+* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+img { max-width: 100%; height: auto; }
+
+/* ============================================================
+   LINK STILE GOOGLE — globale
+   Nessun underline di default, appare solo all'hover
+   ============================================================ */
+a {
+  text-decoration: none !important;
+}
+a:hover {
+  text-decoration: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px !important;
+}
+/* Eccezioni: navbar, bottoni, pill — no underline mai */
+.greedy-nav a,
+.greedy-nav a:hover,
+.blog-cat, .blog-cat:hover,
+.blog-readmore, .blog-readmore:hover,
+.blog-tag, .blog-tag:hover,
+.blog-title:hover,
+.cart-nav-btn, .cart-nav-btn:hover,
+.page__taxonomy-item, .page__taxonomy-item:hover {
+  text-decoration: none !important;
+}
+
+blockquote {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.8;
+  color: #555;
+  border-left: 2px solid #ccc;
+  padding-left: 1.5em;
+  margin-left: 0;
+}
+
+/* ============================================================
+   CATEGORY TAG — pill luxury viola/indigo con ombra 3D
+   ============================================================ */
+.archive__item .page__taxonomy-item,
+.page__taxonomy-item,
+a.page__taxonomy-item,
+.page__meta .page__taxonomy-item {
+  display: inline-block !important;
+  font-size: 10px !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  background: linear-gradient(135deg, #c084fc, #818cf8) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 4px 14px !important;
+  box-shadow: 0 4px 10px rgba(129, 140, 248, 0.4), inset 0 1px 0 rgba(255,255,255,0.25) !important;
+  text-decoration: none !important;
+  margin-right: 4px !important;
+  margin-bottom: 4px !important;
+}
+.archive__item .page__taxonomy-item:hover,
+a.page__taxonomy-item:hover {
+  background: linear-gradient(135deg, #a855f7, #6366f1) !important;
+  box-shadow: 0 6px 14px rgba(129, 140, 248, 0.5), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+}
+
+/* ============================================================
+   SIDEBAR A DESTRA — CSS Grid
+   ============================================================ */
+@media (min-width: 64em) {
+  #main:has(> .sidebar) {
+    display: grid !important;
+    grid-template-columns: 1fr 200px !important;
+    grid-template-rows: auto auto !important;
+    align-items: start !important;
+    gap: 0 2em !important;
+  }
+  #main:has(> .sidebar) > .sidebar {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    float: none !important;
+    margin: 0 !important;
+  }
+  #main:has(> .sidebar) > article.page {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    float: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+  }
+  #main:has(> .sidebar) > .page__related {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    clear: none !important;
+  }
+}
+
+/* ============================================================
+   YOU MAY ALSO ENJOY
+   ============================================================ */
+.page__related { clear: both !important; }
+.page__related .grid__wrapper::after { content: ""; display: table; clear: both; }
+@media (min-width: 37.5em) {
+  .page__related .grid__item {
+    float: left !important;
+    width: 48.9795918367% !important;
+    margin-bottom: 2em !important;
+  }
+  .page__related .grid__item:nth-child(2n+1) { clear: both !important; margin-left: 0 !important; }
+  .page__related .grid__item:nth-child(2n+2) { clear: none !important; margin-left: 2.0408163265% !important; }
+}
+@media (min-width: 48em) {
+  .page__related .grid__item {
+    width: 23.7288135593% !important;
+    margin-left: 2.0408163265% !important;
+  }
+  .page__related .grid__item:nth-child(4n+1) { clear: both !important; margin-left: 0 !important; }
+  .page__related .grid__item:nth-child(4n+2),
+  .page__related .grid__item:nth-child(4n+3),
+  .page__related .grid__item:nth-child(4n+4) { clear: none !important; }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.page__footer, .page__footer footer,
+.page__footer-follow, .page__footer-copyright {
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+.page__footer { border-top: 1px solid #e8e8e8 !important; margin-top: 0; }
+.page__footer-follow ul li,
+.page__footer-follow ul li a,
+.page__footer-copyright,
+.page__footer-copyright a { color: #888 !important; }
+.page__footer-follow ul li a:hover,
+.page__footer-copyright a:hover { color: #111 !important; text-decoration: none !important; }
+
+/* ============================================================
+   WIDE PAGE
+   ============================================================ */
+.wide #main > article.page,
+.wide #main > article.page .page__inner-wrap,
+.wide #main > article.page .page__content {
+  max-width: 1280px !important;
+  width: 100% !important;
+  float: none !important;
+  padding-right: 0 !important;
+}
+
+/* Blog: nasconde il page__title di MM */
+.page--blog #page-title { display: none !important; }
+
+/* Nasconde copyright duplicato MM */
+.page__footer-copyright { display: none !important; }
+.page__footer-custom { color: #888; font-size: 0.65em; }

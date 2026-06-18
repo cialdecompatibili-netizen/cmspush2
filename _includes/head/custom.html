@@ -1,0 +1,268 @@
+<!-- critical-css: inline — zero FOUC su navbar e footer -->
+<style>
+/* NAVBAR (masthead) */
+.masthead {
+  border-bottom: 1px solid #e8e8e8 !important;
+  box-shadow: none !important;
+}
+.greedy-nav {
+  background: #fff !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+.greedy-nav a.site-title,
+.greedy-nav .visible-links a {
+  color: #111 !important;
+}
+.greedy-nav .visible-links a:hover {
+  color: #555 !important;
+}
+.greedy-nav button {
+  background: transparent !important;
+  color: #111 !important;
+}
+
+/* FOOTER */
+.page__footer {
+  background: #ffffff !important;
+  border-top: 1px solid #e8e8e8 !important;
+  box-shadow: none !important;
+  margin-top: 0;
+}
+.page__footer footer {
+  background: #ffffff !important;
+}
+.page__footer-follow,
+.page__footer-copyright {
+  background: #ffffff !important;
+  color: #888 !important;
+}
+.page__footer-follow ul li,
+.page__footer-follow ul li a,
+.page__footer-copyright a,
+.page__footer-copyright {
+  color: #888 !important;
+}
+.page__footer-follow ul li a:hover,
+.page__footer-copyright a:hover {
+  color: #111 !important;
+  text-decoration: none;
+}
+
+/* FIX bottoni shop — override MM global button reset */
+.page__content button.sp-btn-cart,
+button.sp-btn-cart {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 !important;
+  padding: 12px 20px !important;
+  background: #6c63ff !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  letter-spacing: .3px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  line-height: 1.4 !important;
+}
+.page__content button.sp-btn-cart:hover,
+button.sp-btn-cart:hover {
+  background: #5a52e0 !important;
+  color: #fff !important;
+}
+.page__content button.sp-btn-wish,
+button.sp-btn-wish {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 46px !important;
+  height: 46px !important;
+  border: 1.5px solid #ddd !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  cursor: pointer !important;
+  font-size: 1.3em !important;
+  color: #e74c3c !important;
+  visibility: visible !important;
+}
+.page__content .sp-qty button,
+.sp-qty button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 40px !important;
+  border: none !important;
+  background: #fff !important;
+  font-size: 1.2em !important;
+  cursor: pointer !important;
+  color: #333 !important;
+  visibility: visible !important;
+}
+
+/* ICONA CARRELLO NAVBAR */
+.cart-nav-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  background: none !important;
+  border: none !important;
+  cursor: pointer;
+  color: #111 !important;
+  font-size: 15px !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  padding: 0 8px !important;
+  position: relative;
+  line-height: 1;
+}
+.cart-nav-btn:hover { color: #6c63ff !important; }
+.cart-nav-badge {
+  background: #e74c3c;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 50%;
+  min-width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+  position: absolute;
+  top: -6px;
+  right: -2px;
+}
+
+/* DROPDOWN SHOP */
+.has-dropdown { position: relative; }
+.has-dropdown > a::after { content: " ▾"; font-size: 10px; opacity: .6; }
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1.5px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.10);
+  min-width: 220px;
+  z-index: 9999;
+  padding: 6px 0;
+}
+.has-dropdown:hover .dropdown-menu { display: block; }
+.dropdown-menu a {
+  display: block;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #333 !important;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dropdown-menu a:hover { background: #f5f5ff; color: #6c63ff !important; }
+.dropdown-menu .dropdown-sep {
+  border-top: 1px solid #eee;
+  margin: 4px 0;
+}
+.dropdown-menu .dropdown-label {
+  padding: 6px 16px 2px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: #bbb;
+}
+</style>
+
+{% if site.integrations.ga4.enabled and site.integrations.ga4.id != "" %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.integrations.ga4.id }}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ site.integrations.ga4.id }}');</script>
+{% endif %}
+
+{% if site.integrations.search_console.enabled and site.integrations.search_console.verification != "" %}
+<meta name="google-site-verification" content="{{ site.integrations.search_console.verification }}" />
+{% endif %}
+
+{% if site.integrations.meta_pixel.enabled and site.integrations.meta_pixel.id != "" %}
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','{{ site.integrations.meta_pixel.id }}');fbq('track','PageView');</script>
+{% endif %}
+
+{% if site.integrations.hotjar.enabled and site.integrations.hotjar.id != "" %}
+<script>(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:{{ site.integrations.hotjar.id }},hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r)})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');</script>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var BASE = '/cmspush';
+
+  // --- ICONA CARRELLO nella navbar ---
+  function getCartCount() {
+    try {
+      var cart = JSON.parse(sessionStorage.getItem('cmspush_cart') || '[]');
+      return cart.reduce(function(s,i){ return s + (i.qty||1); }, 0);
+    } catch(e){ return 0; }
+  }
+  function renderCartIcon() {
+    var count = getCartCount();
+    var existing = document.getElementById('cart-nav-icon');
+    if (existing) {
+      var badge = existing.querySelector('.cart-nav-badge');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+      return;
+    }
+    // Inserisce prima del bottone search
+    var searchBtn = document.querySelector('.search__toggle');
+    if (!searchBtn) return;
+    var a = document.createElement('a');
+    a.id = 'cart-nav-icon';
+    a.href = BASE + '/shop/carrello/';
+    a.className = 'cart-nav-btn';
+    a.title = 'Carrello';
+    a.innerHTML = '🛒<span class="cart-nav-badge" style="display:' + (count > 0 ? 'inline-flex' : 'none') + '">' + count + '</span>';
+    searchBtn.parentNode.insertBefore(a, searchBtn);
+  }
+  renderCartIcon();
+  // Aggiorna badge ogni volta che sessionStorage cambia (cross-tab)
+  window.addEventListener('storage', renderCartIcon);
+  // Aggiorna ogni 2s per catturare aggiunte nella stessa tab
+  setInterval(renderCartIcon, 2000);
+
+  // --- SPOSTA COPYRIGHT DOPO SOCIAL ---
+  var custom = document.querySelector('.page__footer-custom');
+  var follow = document.querySelector('.page__footer-follow');
+  if (custom && follow && follow.nextSibling !== custom) {
+    follow.parentNode.insertBefore(custom, follow.nextSibling);
+  }
+
+  // --- DROPDOWN SHOP ---
+  var links = document.querySelectorAll('.greedy-nav .visible-links a, .greedy-nav .hidden-links a');
+  links.forEach(function(a){
+    if(a.textContent.trim() === 'Shop'){
+      var li = a.parentElement;
+      li.classList.add('has-dropdown');
+      li.innerHTML = '<a href="' + a.href + '">Shop</a>' +
+        '<div class="dropdown-menu">' +
+          '<div class="dropdown-label">Categorie</div>' +
+          '<a href="{{ "/shop/" | relative_url }}">📦 Tutti i prodotti</a>' +
+          '<a href="{{ "/shop/categoria/abbigliamento/" | relative_url }}">👕 Abbigliamento</a>' +
+          '<div class="dropdown-sep"></div>' +
+          '<div class="dropdown-label">Prodotto demo</div>' +
+          '<a href="{{ "/shop/maglietta-dr-sorriso/" | relative_url }}">🛒 Maglietta Dr. Sorriso</a>' +
+        '</div>';
+    }
+  });
+});
+</script>

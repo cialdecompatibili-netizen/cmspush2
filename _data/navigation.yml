@@ -1,0 +1,24 @@
+main:
+  - title: "Home"
+    url: /
+  - title: "Blog"
+    url: /blog/
+  - title: "Shop"
+    url: /shop/
+    children:
+      - title: "Tutti i prodotti"
+        url: /shop/
+      - title: "Abbigliamento"
+        url: /shop/categoria/abbigliamento/
+      - title: "---"
+      - title: "Maglietta Dr. Sorriso (demo)"
+        url: /shop/prodotto/?slug=maglietta-dr-sorriso
+      - title: "---"
+      - title: "🛒 Carrello"
+        url: /shop/carrello/
+  - title: "Categories"
+    url: /categories/
+  - title: "Changelog"
+    url: /changelog/
+  - title: "About"
+    url: /about/
