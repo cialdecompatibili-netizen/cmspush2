@@ -1318,14 +1318,16 @@ async function salvaImpostazioni(){
 
   // titolo, email, baseurl
   y=y.replace(/^title:.*$/m,`title: ${document.getElementById('cfg-title').value.trim()}`);
-  y=y.replace(/^email:.*$/m,`email: ${document.getElementById('cfg-email').value.trim()}`);
+  const emailVal=document.getElementById('cfg-email').value.trim();
+  y=y.replace(/^email:.*$/m,`email: "${emailVal}"`);
+
   const buVal=document.getElementById('cfg-baseurl').value.trim();
   if(y.match(/^baseurl:/m)) y=y.replace(/^baseurl:.*$/m,`baseurl: "${buVal}"`);
   else y=`baseurl: "${buVal}"\n`+y;
 
-  // descrizione
-  const desc=document.getElementById('cfg-description').value.trim();
-  y=y.replace(/description:\s*>-\s*\n\s*.+/,`description: >-\n  ${desc}`);
+  // descrizione — gestisce sia formato >- multiriga che inline
+  const desc=document.getElementById('cfg-description').value.trim().replace(/\n/g,' ');
+  y=y.replace(/^description:[\s\S]*?(?=^\w)/m, `description: >-\n  ${desc}\n`);
 
   // autore nome, bio, avatar
   y=y.replace(/(author:\s*\n\s*name\s*:\s*)(".+?"|[^\n]+)/,`$1"${document.getElementById('cfg-author-name').value.trim()}"`);
