@@ -73,3 +73,14 @@ function lxGo(n) {
 function lxSlide(d) { lxGo(lxCur + d); }
 setInterval(function(){ lxSlide(1); }, 5000);
 </script>
+
+<script>
+const TRACKER_ENDPOINT = "https://script.google.com/macros/s/AKfycbzS_BXbhdL5lonAPSMcLF0d0zxBgf4L38mxBrhGMSsKrDKp-vlYMCxuWmcUURnu6Vxn/exec";
+function trackClick(sito, bottone, prodotto, prezzo) {
+  try {
+    const device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+    const params = new URLSearchParams({ sito, bottone, prodotto: prodotto||'-', prezzo: prezzo||'-', browser: navigator.userAgent.substring(0, 80), device });
+    new Image().src = TRACKER_ENDPOINT + "?" + params.toString();
+  } catch(e) {}
+}
+</script>
