@@ -230,6 +230,13 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
             <button class="btn btn-secondary btn-sm" onclick="aggiungiPagBlocco()">✚ Nuovo box HTML</button>
           </div>
         </div>
+        <div class="field">
+          <label>URL pagina <span style="font-weight:400;color:#bbb">(usalo per il Menu o altri link)</span></label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="pag-url-pubblico" readonly style="flex:1;background:#f5f5f5;color:#555;font-size:12px">
+            <button class="btn btn-secondary btn-sm" onclick="copiaUrlPagina()">📋 Copia</button>
+          </div>
+        </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva</button>
           <button class="btn btn-secondary" onclick="anteprimaPagina()">👁 Anteprima live</button>
@@ -1047,6 +1054,7 @@ async function modificaPaginaBox(slug,path){
     _pagBlocchi=[];
   }
   renderPagBlocchi();
+  aggiornaUrlPubblico();
   document.getElementById('msg-pag').style.display='none';
   document.getElementById('pag-lista-view').style.display='none';
   document.getElementById('pag-editor-view').style.display='block';
@@ -1112,6 +1120,21 @@ function apriPaginaSulSito(){
   const url=slug==='home'?base:`${base}${slug}/`;
   window.open(url,'_blank');
 }
+function aggiornaUrlPubblico(){
+  const base=location.origin+location.pathname.replace(/\/admin\/?.*$/,'/');
+  const slug=window._paginaSlug||'';
+  const input=document.getElementById('pag-url-pubblico');
+  if(!slug){input.value='Salva la pagina per ottenere l\'URL';return;}
+  input.value=slug==='home'?base:`${base}${slug}/`;
+}
+function copiaUrlPagina(){
+  const input=document.getElementById('pag-url-pubblico');
+  if(!input.value||input.value.startsWith('Salva'))return;
+  navigator.clipboard.writeText(input.value).then(()=>{
+    showMsg('msg-pag','✅ URL copiato negli appunti!','ok');
+    setTimeout(()=>document.getElementById('msg-pag').style.display='none',2000);
+  });
+}
 function chiudiPagina(){
   document.getElementById('editor-pagina').style.display='none';
   document.getElementById('preview-pagina-box').style.display='none';
@@ -1131,6 +1154,7 @@ function apriNuovaPagina(){
   document.getElementById('pag-permalink-field').style.display='block';
   renderPagBlocchi();
   document.getElementById('nome-pagina').textContent='Nuova pagina';
+  document.getElementById('pag-url-pubblico').value='Salva la pagina per ottenere l\'URL';
   document.getElementById('msg-pag').style.display='none';
   document.getElementById('preview-pagina-box').style.display='none';
   document.getElementById('pag-lista-view').style.display='none';
