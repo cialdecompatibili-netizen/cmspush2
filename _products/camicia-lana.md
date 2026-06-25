@@ -1,5 +1,5 @@
 ---
-title: "Camicia Lana"
+title: "Camicia Lana merino"
 price: 49.90
 stock: 15
 sku: "CAM-LANA-001"
