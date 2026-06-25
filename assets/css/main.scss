@@ -44,13 +44,14 @@ body {
   color: var(--t-text, #3a3a3a);
   -webkit-font-smoothing: antialiased;
   background: var(--t-body-bg, #ffffff) !important;
+  font-size: calc(clamp(1rem, 1.6vw, 1.15rem) * var(--t-font-scale, 1));
 }
 .initial-content, #main, .page, .page__inner-wrap,
 .page__content, .archive, .sidebar, .sidebar__right {
   background: var(--t-body-bg, #ffffff) !important;
 }
 .page__content p, .page__content li {
-  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-size: calc(clamp(1rem, 1.6vw, 1.15rem) * var(--t-font-scale, 1));
   line-height: 1.9;
   color: var(--t-text, #3a3a3a);
   margin-bottom: 1.4em;

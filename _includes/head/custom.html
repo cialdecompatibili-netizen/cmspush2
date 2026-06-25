@@ -12,8 +12,10 @@
   --t-link:        {{ t.link        | default: '#6c63ff' }};
   --t-font:        {{ t.font        | default: "'Inter', -apple-system, sans-serif" }};
   --t-radius:      {{ t.radius      | default: '10px' }};
+  --t-font-scale:  {{ t.font_scale  | default: '1' }};
 }
 body, .page__content, .greedy-nav, .page__footer { font-family: var(--t-font) !important; }
+body { font-size: calc(1rem * var(--t-font-scale)); }
 </style>
 <!-- critical-css: inline — zero FOUC su navbar e footer -->
 <style>

@@ -374,6 +374,17 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           </div>
         </div>
       </div>
+      <div class="card">
+        <div class="card-title">🔎 Dimensione testo</div>
+        <div class="field">
+          <label>Piccolo ←→ Grande</label>
+          <input type="range" id="t-font-scale" min="0.85" max="1.25" step="0.05" value="1" style="width:100%" oninput="document.getElementById('fontscale-preview').style.fontSize=(this.value*16)+'px';document.getElementById('fontscale-val').textContent=Math.round(this.value*100)+'%'">
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+            <span id="fontscale-preview" style="font-size:16px;color:#333">Aa Esempio testo</span>
+            <span id="fontscale-val" style="font-size:12px;color:#888">100%</span>
+          </div>
+        </div>
+      </div>
       <div class="btn-group">
         <button class="btn btn-primary" onclick="salvaTema()">🚀 Applica tema</button>
       </div>
@@ -1343,6 +1354,10 @@ async function caricaTema(){
   document.getElementById('t-radius').value=radiusVal;
   document.getElementById('radius-preview').style.borderRadius=radiusVal+'px';
   document.getElementById('radius-val').textContent=radiusVal+'px';
+  const scaleVal=t.font_scale?parseFloat(t.font_scale):1;
+  document.getElementById('t-font-scale').value=scaleVal;
+  document.getElementById('fontscale-preview').style.fontSize=(scaleVal*16)+'px';
+  document.getElementById('fontscale-val').textContent=Math.round(scaleVal*100)+'%';
   renderPalette();renderFontGrid();
 }
 async function salvaTema(){
@@ -1360,7 +1375,8 @@ async function salvaTema(){
     text:document.getElementById('t-text').value,
     link:document.getElementById('t-link').value,
     font:fontObj.value,
-    radius:document.getElementById('t-radius').value+'px'
+    radius:document.getElementById('t-radius').value+'px',
+    font_scale:document.getElementById('t-font-scale').value
   };
   showMsg('msg-tema','⏳ Salvataggio...','');
   const res=await ghPut('_data/tema.json','Aggiorna tema sito',JSON.stringify(tema,null,2),_temaSha||undefined);
