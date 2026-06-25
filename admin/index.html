@@ -1282,7 +1282,7 @@ async function salvaTema(){
   showMsg('msg-tema','⏳ Salvataggio...','');
   const putRes=await ghPut('_config.yml',`Cambia tema: ${_temaCorrente}`,yaml,_configSha);
   const j=await putRes.json();
-  if(putRes.ok){_configSha=j.content.sha;showMsg('msg-tema',`✅ Tema "${_temaCorrente}" salvato! Fai 2-PUBBLICA.bat per vederlo live.`,'ok');}
+  if(putRes.ok){_configSha=j.content.sha;showMsg('msg-tema',`✅ Tema "${_temaCorrente}" applicato! Live in ~60s.`,'ok');startDeployPolling();}
   else showMsg('msg-tema','❌ '+j.message,'err');
 }
 
@@ -1390,7 +1390,7 @@ async function salvaImpostazioni(){
   const j=await putRes.json();
   if(putRes.ok){
     _configShaImp=j.content.sha;
-    showMsg('msg-cfg','✅ Impostazioni salvate! Live in ~60s dopo 2-PUBBLICA.bat.','ok');
+    showMsg('msg-cfg','✅ Impostazioni salvate! Live in ~60s.','ok');startDeployPolling();
   } else {
     showMsg('msg-cfg','❌ '+j.message,'err');
   }
