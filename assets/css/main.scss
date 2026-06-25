@@ -115,6 +115,7 @@ img { max-width: 100%; height: auto; }
    ============================================================ */
 a {
   text-decoration: none !important;
+  color: var(--t-link, #6c63ff);
 }
 a:hover {
   text-decoration: underline !important;
@@ -138,8 +139,8 @@ blockquote {
   font-style: italic;
   font-weight: 300;
   line-height: 1.8;
-  color: #555;
-  border-left: 2px solid #ccc;
+  color: var(--t-text, #555);
+  border-left: 2px solid var(--t-accent, #ccc);
   padding-left: 1.5em;
   margin-left: 0;
 }
@@ -156,20 +157,20 @@ a.page__taxonomy-item,
   letter-spacing: 0.15em !important;
   text-transform: uppercase !important;
   font-weight: 500 !important;
-  background: linear-gradient(135deg, #c084fc, #818cf8) !important;
+  background: var(--t-accent, #818cf8) !important;
   color: #fff !important;
   border: none !important;
   border-radius: 999px !important;
   padding: 4px 14px !important;
-  box-shadow: 0 4px 10px rgba(129, 140, 248, 0.4), inset 0 1px 0 rgba(255,255,255,0.25) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25) !important;
   text-decoration: none !important;
   margin-right: 4px !important;
   margin-bottom: 4px !important;
 }
 .archive__item .page__taxonomy-item:hover,
 a.page__taxonomy-item:hover {
-  background: linear-gradient(135deg, #a855f7, #6366f1) !important;
-  box-shadow: 0 6px 14px rgba(129, 140, 248, 0.5), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  background: var(--t-accent-dark, #6366f1) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2) !important;
   color: #fff !important;
 }
 
