@@ -233,6 +233,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <div class="btn-group">
           <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva</button>
           <button class="btn btn-secondary" onclick="anteprimaPagina()">👁 Anteprima live</button>
+          <button class="btn btn-secondary" onclick="apriPaginaSulSito()">🔗 Apri sul sito ↗</button>
           <button class="btn btn-secondary" onclick="tornaPagine()">✕ Annulla</button>
         </div>
         <div class="msg" id="msg-pag"></div>
@@ -1104,6 +1105,12 @@ function anteprimaPagina(){
   const box=document.getElementById('preview-pagina-box');
   document.getElementById('preview-pagina-frame').src=url;
   box.style.display='block';box.scrollIntoView({behavior:'smooth'});
+}
+function apriPaginaSulSito(){
+  const base=location.origin+location.pathname.replace(/\/admin\/?.*$/,'/');
+  const slug=window._paginaSlug||'';
+  const url=slug==='home'?base:`${base}${slug}/`;
+  window.open(url,'_blank');
 }
 function chiudiPagina(){
   document.getElementById('editor-pagina').style.display='none';
