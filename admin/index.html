@@ -359,6 +359,21 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <div class="field"><label>Colore link</label><input type="color" id="t-link" value="#6c63ff"></div>
         </div>
       </div>
+      <div class="card">
+        <div class="card-title">🔤 Tipografia</div>
+        <div id="font-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">◻️ Stile bottoni e angoli</div>
+        <div class="field">
+          <label>Angoli: squadrato ←→ arrotondato</label>
+          <input type="range" id="t-radius" min="0" max="24" value="10" style="width:100%" oninput="document.getElementById('radius-preview').style.borderRadius=this.value+'px';document.getElementById('radius-val').textContent=this.value+'px'">
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+            <div id="radius-preview" style="width:60px;height:32px;background:var(--t-accent,#6c63ff);border-radius:10px;background:#6c63ff"></div>
+            <span id="radius-val" style="font-size:12px;color:#888">10px</span>
+          </div>
+        </div>
+      </div>
       <div class="btn-group">
         <button class="btn btn-primary" onclick="salvaTema()">🚀 Applica tema</button>
       </div>
@@ -1261,6 +1276,23 @@ const PALETTES=[
 ];
 let _paletteCorrente='pulito';
 let _temaSha=null;
+const FONTS=[
+  {id:'inter',   label:'Moderno',   value:"'Inter', -apple-system, sans-serif"},
+  {id:'poppins', label:'Friendly',  value:"'Poppins', sans-serif"},
+  {id:'playfair',label:'Elegante',  value:"'Playfair Display', serif"},
+  {id:'lora',    label:'Editoriale',value:"'Lora', serif"},
+  {id:'grotesk', label:'Tech',      value:"'Space Grotesk', sans-serif"},
+];
+let _fontCorrente='inter';
+function renderFontGrid(){
+  document.getElementById('font-grid').innerHTML=FONTS.map(f=>`
+    <div onclick="selezionaFont('${f.id}')" style="cursor:pointer;border-radius:10px;padding:14px 8px;text-align:center;border:3px solid ${_fontCorrente===f.id?'#6c63ff':'#e0e0e0'};background:#fff;transition:border .15s">
+      <div style="font-family:${f.value};font-size:18px;font-weight:600;color:#333;margin-bottom:4px">Aa</div>
+      <div style="font-size:11px;font-weight:700;color:#444">${f.label}</div>
+      ${_fontCorrente===f.id?'<div style="font-size:9px;color:#6c63ff;font-weight:700;margin-top:2px">✓ Attivo</div>':''}
+    </div>`).join('');
+}
+function selezionaFont(id){_fontCorrente=id;renderFontGrid();}
 
 function renderPalette(){
   document.getElementById('palette-grid').innerHTML=PALETTES.map(p=>`
@@ -1297,7 +1329,7 @@ function darkenHex(hex,pct){
 }
 async function caricaTema(){
   const res=await ghGet('_data/tema.json');
-  if(!res.ok){renderPalette();return;}
+  if(!res.ok){renderPalette();renderFontGrid();return;}
   const d=await res.json();_temaSha=d.sha;
   const t=JSON.parse(dec(d.content));
   document.getElementById('t-accent').value=t.accent||'#6c63ff';
@@ -1306,12 +1338,18 @@ async function caricaTema(){
   document.getElementById('t-body-bg').value=t.body_bg||'#ffffff';
   document.getElementById('t-text').value=t.text||'#3a3a3a';
   document.getElementById('t-link').value=t.link||'#6c63ff';
-  renderPalette();
+  _fontCorrente=(FONTS.find(f=>f.value===t.font)||FONTS[0]).id;
+  const radiusVal=t.radius?parseInt(t.radius,10):10;
+  document.getElementById('t-radius').value=radiusVal;
+  document.getElementById('radius-preview').style.borderRadius=radiusVal+'px';
+  document.getElementById('radius-val').textContent=radiusVal+'px';
+  renderPalette();renderFontGrid();
 }
 async function salvaTema(){
   if(!tok())return showMsg('msg-tema','⚠️ Token mancante.','err');
   const accent=document.getElementById('t-accent').value;
   const navText=document.getElementById('t-nav-text').value;
+  const fontObj=FONTS.find(f=>f.id===_fontCorrente)||FONTS[0];
   const tema={
     accent,
     accent_dark:darkenHex(accent,15),
@@ -1320,7 +1358,9 @@ async function salvaTema(){
     nav_hover:darkenHex(navText,-20),
     body_bg:document.getElementById('t-body-bg').value,
     text:document.getElementById('t-text').value,
-    link:document.getElementById('t-link').value
+    link:document.getElementById('t-link').value,
+    font:fontObj.value,
+    radius:document.getElementById('t-radius').value+'px'
   };
   showMsg('msg-tema','⏳ Salvataggio...','');
   const res=await ghPut('_data/tema.json','Aggiorna tema sito',JSON.stringify(tema,null,2),_temaSha||undefined);
