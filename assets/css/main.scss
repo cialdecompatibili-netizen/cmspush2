@@ -39,18 +39,18 @@ h4, h5, h6 {
 body {
   font-size: clamp(1rem, 1.6vw, 1.15rem);
   line-height: 1.9;
-  color: #3a3a3a;
+  color: var(--t-text, #3a3a3a);
   -webkit-font-smoothing: antialiased;
-  background: #ffffff !important;
+  background: var(--t-body-bg, #ffffff) !important;
 }
 .initial-content, #main, .page, .page__inner-wrap,
 .page__content, .archive, .sidebar, .sidebar__right {
-  background: #ffffff !important;
+  background: var(--t-body-bg, #ffffff) !important;
 }
 .page__content p, .page__content li {
   font-size: clamp(1rem, 1.6vw, 1.15rem);
   line-height: 1.9;
-  color: #3a3a3a;
+  color: var(--t-text, #3a3a3a);
   margin-bottom: 1.4em;
 }
 .page__content h2, .page__content h3, .page__content h4 {
@@ -94,14 +94,14 @@ body {
   box-shadow: none !important;
 }
 .greedy-nav {
-  background: #fff !important;
+  background: var(--t-nav-bg, #fff) !important;
   box-shadow: none !important;
   border-bottom: none !important;
 }
 .greedy-nav a.site-title,
-.greedy-nav .visible-links a { color: #111 !important; }
-.greedy-nav .visible-links a:hover { color: #555 !important; }
-.greedy-nav button { background: transparent !important; color: #111 !important; }
+.greedy-nav .visible-links a { color: var(--t-nav-text, #111) !important; }
+.greedy-nav .visible-links a:hover { color: var(--t-nav-hover, #555) !important; }
+.greedy-nav button { background: transparent !important; color: var(--t-nav-text, #111) !important; }
 .page__meta, .page__meta-sep, .breadcrumbs {
   font-size: clamp(0.78rem, 1.2vw, 0.88rem);
   color: #888;
@@ -242,7 +242,7 @@ a.page__taxonomy-item:hover {
    ============================================================ */
 .page__footer, .page__footer footer,
 .page__footer-follow, .page__footer-copyright {
-  background: #ffffff !important;
+  background: var(--t-body-bg, #ffffff) !important;
   box-shadow: none !important;
 }
 .page__footer { border-top: 1px solid #e8e8e8 !important; margin-top: 0; }
@@ -251,7 +251,7 @@ a.page__taxonomy-item:hover {
 .page__footer-copyright,
 .page__footer-copyright a { color: #888 !important; }
 .page__footer-follow ul li a:hover,
-.page__footer-copyright a:hover { color: #111 !important; text-decoration: none !important; }
+.page__footer-copyright a:hover { color: var(--t-nav-text, #111) !important; text-decoration: none !important; }
 
 /* ============================================================
    WIDE PAGE
