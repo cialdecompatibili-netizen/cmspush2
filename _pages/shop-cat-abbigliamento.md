@@ -24,67 +24,26 @@ shop_category_name: Abbigliamento
 <p style="margin-bottom:.5em"><a href="{{ '/shop/' | relative_url }}" style="color:#6c63ff;font-size:13px;text-decoration:none">← Torna allo Shop</a></p>
 <p style="color:#666;font-size:14px">Prodotti nella categoria <strong>{{ page.shop_category_name }}</strong></p>
 
-<div id="prods-loading" style="color:#aaa;font-size:14px">Caricamento prodotti...</div>
-<div class="shop-list" id="prods-grid"></div>
+{% assign cat_products = site.products | where: "category", page.shop_category %}
+<div class="shop-list" id="prods-grid">
+  {% if cat_products.size == 0 %}
+    <p style="color:#bbb">Nessun prodotto in questa categoria.</p>
+  {% else %}
+    {% for p in cat_products %}
+    <div class="prod-card">
+      {% if p.image %}<img src="{{ p.image }}" alt="{{ p.title }}">{% endif %}
+      <div class="prod-card-body">
+        <h3><a href="{{ p.url | relative_url }}" style="color:inherit;text-decoration:none">{{ p.title }}</a></h3>
+        {% if p.description %}<div class="desc">{{ p.description | truncate: 120 }}</div>{% endif %}
+        <div class="price">€ {{ p.price | default: "—" }}</div>
+      </div>
+      <button class="btn-cart" onclick="aggiungiCarrello('{{ p.name | remove: '.md' }}','{{ p.title | replace: "'", "\'" }}',{{ p.price | default: 0 }})">🛒 Aggiungi</button>
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>
 
 <script>
-const BASE  = window.location.origin + (window.SITE_BASE || '');
-const OWNER = window.location.hostname.split('.')[0];
-const REPO  = (window.SITE_BASE || '').replace(/^\//,'') || OWNER + '.github.io';
-const FILTER_CAT = '{{ page.shop_category }}';
-
-function parseFrontmatter(text) {
-  const m = text.match(/^---\n([\s\S]*?)\n---/);
-  if (!m) return {};
-  const obj = {};
-  m[1].split('\n').forEach(line => {
-    const i = line.indexOf(':');
-    if (i < 0) return;
-    const k = line.slice(0,i).trim();
-    let v = line.slice(i+1).trim().replace(/^["']|["']$/g,'');
-    obj[k] = v;
-  });
-  return obj;
-}
-
-async function loadCat() {
-  const pGrid = document.getElementById('prods-grid');
-  const loading = document.getElementById('prods-loading');
-  try {
-    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/_products`);
-    if (!r.ok) throw new Error();
-    const files = await r.json();
-    const mdFiles = files.filter(f => f.name.endsWith('.md'));
-    const products = [];
-    for (const f of mdFiles) {
-      const fr = await fetch(f.download_url);
-      const text = await fr.text();
-      const meta = parseFrontmatter(text);
-      meta._slug = f.name.replace('.md','');
-      if (meta.category === FILTER_CAT) products.push(meta);
-    }
-    loading.style.display = 'none';
-    if (products.length === 0) {
-      pGrid.innerHTML = '<p style="color:#bbb">Nessun prodotto in questa categoria.</p>';
-    } else {
-      products.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'prod-card';
-        card.innerHTML = `
-          ${p.image ? `<img src="${p.image}" alt="${p.title||p._slug}">` : ''}
-          <div class="prod-card-body">
-            <h3><a href="${BASE}/shop/prodotto/?slug=${p._slug}" style="color:inherit;text-decoration:none">${p.title||p._slug}</a></h3>
-            ${p.description ? `<div class="desc">${p.description.slice(0,120)}${p.description.length>120?'…':''}</div>` : ''}
-            <div class="price">€ ${p.price||'—'}</div>
-          </div>
-          <button class="btn-cart" onclick="aggiungiCarrello('${p._slug}','${(p.title||p._slug).replace(/'/g,"\\'")}',${p.price||0})">🛒 Aggiungi</button>`;
-        pGrid.appendChild(card);
-      });
-    }
-  } catch(e) {
-    loading.innerHTML = '<p style="color:#e74c3c">Errore caricamento prodotti.</p>';
-  }
-}
 function aggiungiCarrello(slug, title, price) {
   const CART_KEY = (window.SITE_BASE || 'default') + '_cart';
   let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || '[]');
