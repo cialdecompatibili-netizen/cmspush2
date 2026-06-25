@@ -8,7 +8,7 @@ description: >-
 footer_text: "&copy; 2026 CMSPush2"
 twitter_username: username
 github_username: username
-minimal_mistakes_skin: aqua
+minimal_mistakes_skin: default
 search: true
 
 # SEO globale
