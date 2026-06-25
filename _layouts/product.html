@@ -181,10 +181,11 @@ layout: single
     {% assign demo_reviews = "Marco R.|5|12 apr 2026|Qualità eccezionale, l'ho regalata al mio dentista e ha riso per una settimana intera.;Giulia T.|5|3 mar 2026|Cotone morbidissimo, la stampa tiene benissimo dopo 10 lavaggi. Super consigliata!;Paolo M.|4|18 feb 2026|Bella maglietta, taglia leggermente larga. Prendete una taglia in meno.;Sara B.|5|2 feb 2026|Originalissima, unica nel suo genere. Ho ricevuto mille complimenti al lavoro." | split: ";" %}
     {% for rv in demo_reviews %}
       {% assign f = rv | split: "|" %}
+      {% assign f_stars = f[1] | plus: 0 %}
       <div class="sp-review">
         <div class="sp-review-head">
           <span class="sp-review-name">{{ f[0] }}</span>
-          <span class="sp-review-stars">{% for i in (1..5) %}{% if i <= f[1] %}★{% else %}☆{% endif %}{% endfor %}</span>
+          <span class="sp-review-stars">{% for i in (1..5) %}{% if i <= f_stars %}★{% else %}☆{% endif %}{% endfor %}</span>
         </div>
         <div class="sp-review-date">{{ f[2] }}</div>
         <div class="sp-review-text">{{ f[3] }}</div>
