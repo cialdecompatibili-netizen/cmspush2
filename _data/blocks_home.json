@@ -34,5 +34,11 @@
     "nome": "CTA finale",
     "enabled": true,
     "html": "<section class=\"py-20 bg-gray-900 text-white text-center\" aria-labelledby=\"cta-title\">\n  <div class=\"max-w-2xl mx-auto px-8\">\n    <h2 id=\"cta-title\" class=\"text-4xl font-extrabold mb-4\">Pronto a iniziare?</h2>\n    <p class=\"text-gray-400 text-lg mb-8\">Setup in 5 minuti. Nessuna carta di credito per la demo.</p>\n    <div class=\"flex flex-col sm:flex-row gap-4 justify-center\">\n      <a href=\"__BASEURL__/admin/\" aria-label=\"Prova il CMS gratis\" class=\"inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-indigo-500 rounded-full hover:bg-indigo-400\">\n        Prova il CMS gratis\n      </a>\n      <a href=\"#pricing\" aria-label=\"Vai ai prezzi\" class=\"inline-flex items-center justify-center px-8 py-4 text-base font-bold text-indigo-400 border border-indigo-500 rounded-full hover:bg-indigo-900\">\n        Vedi i prezzi\n      </a>\n    </div>\n  </div>\n</section>"
+  },
+  {
+    "id": "box1782418437639",
+    "nome": "Nuovo box",
+    "enabled": true,
+    "html": "<section style=\"padding:40px;text-align:center\">\n  <h2>Nuovo box</h2>\n  <p>caccola sparsa</p>\n</section>"
   }
 ]
