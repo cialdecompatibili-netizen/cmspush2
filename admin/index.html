@@ -341,14 +341,28 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
     <div class="page" id="page-tema">
       <div class="page-title">🎨 Tema</div>
       <div class="card">
-        <div class="card-title">Scegli skin Minimal Mistakes</div>
-        <div id="tema-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:18px"></div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="salvaTema()">💾 Applica tema</button>
-        </div>
-        <div class="msg" id="msg-tema"></div>
-        <div style="margin-top:14px;font-size:12px;color:#aaa">Il cambio tema aggiorna _config.yml e va live in ~60 secondi dopo il deploy con 2-PUBBLICA.bat.</div>
+        <div class="card-title">Palette preset</div>
+        <div id="palette-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:4px"></div>
       </div>
+      <div class="card">
+        <div class="card-title">🖌 Personalizza colori</div>
+        <div class="grid2">
+          <div class="field"><label>Colore principale (bottoni, link)</label><input type="color" id="t-accent" value="#6c63ff"></div>
+          <div class="field"><label>Nav — sfondo</label><input type="color" id="t-nav-bg" value="#ffffff"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Nav — testo</label><input type="color" id="t-nav-text" value="#111111"></div>
+          <div class="field"><label>Sfondo pagina</label><input type="color" id="t-body-bg" value="#ffffff"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Testo principale</label><input type="color" id="t-text" value="#3a3a3a"></div>
+          <div class="field"><label>Colore link</label><input type="color" id="t-link" value="#6c63ff"></div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="salvaTema()">🚀 Applica tema</button>
+      </div>
+      <div class="msg" id="msg-tema"></div>
     </div>
 
     <!-- IMPOSTAZIONI SITO -->
@@ -1235,54 +1249,83 @@ async function eliminaArticolo(path, sha, nome){
 }
 
 // TEMA
-// TEMA
-const SKINS=[
-  {id:'default', label:'Default', bg:'#fff', accent:'#6c63ff', text:'#222'},
-  {id:'dark',    label:'Dark',    bg:'#1a1a2e', accent:'#a89fff', text:'#eee'},
-  {id:'mint',    label:'Mint',    bg:'#f0faf5', accent:'#2ecc71', text:'#222'},
-  {id:'sunrise', label:'Sunrise', bg:'#fff8f0', accent:'#e67e22', text:'#222'},
-  {id:'aqua',    label:'Aqua',    bg:'#e8f8ff', accent:'#00bcd4', text:'#222'},
-  {id:'neon',    label:'Neon',    bg:'#0d0d0d', accent:'#39ff14', text:'#eee'},
-  {id:'plum',    label:'Plum',    bg:'#2d1b4e', accent:'#c39bd3', text:'#eee'},
-  {id:'dirt',    label:'Dirt',    bg:'#f5f0e8', accent:'#8B4513', text:'#222'},
-  {id:'air',     label:'Air',     bg:'#f7f9fc', accent:'#4a90e2', text:'#222'},
+const PALETTES=[
+  {id:'pulito',  label:'Bianco',   accent:'#6c63ff',accent_dark:'#5a52e0',nav_bg:'#ffffff',nav_text:'#111111',nav_hover:'#555555',body_bg:'#ffffff',text:'#3a3a3a',link:'#6c63ff'},
+  {id:'aqua',    label:'Aqua',     accent:'#00bcd4',accent_dark:'#0097a7',nav_bg:'#e0f7fa',nav_text:'#006064',nav_hover:'#00838f',body_bg:'#f5feff',text:'#1a3a3a',link:'#0097a7'},
+  {id:'verde',   label:'Verde',    accent:'#2ecc71',accent_dark:'#27ae60',nav_bg:'#f0faf5',nav_text:'#1a5c3a',nav_hover:'#27ae60',body_bg:'#fafffe',text:'#2c3a2e',link:'#27ae60'},
+  {id:'arancio', label:'Arancio',  accent:'#e67e22',accent_dark:'#d35400',nav_bg:'#fff8f0',nav_text:'#7d3c00',nav_hover:'#d35400',body_bg:'#fffdf8',text:'#3a2a1a',link:'#d35400'},
+  {id:'rosso',   label:'Rosso',    accent:'#e74c3c',accent_dark:'#c0392b',nav_bg:'#fff5f5',nav_text:'#7b1a1a',nav_hover:'#c0392b',body_bg:'#ffffff',text:'#3a1a1a',link:'#c0392b'},
+  {id:'viola',   label:'Viola',    accent:'#9b59b6',accent_dark:'#8e44ad',nav_bg:'#2d1b4e',nav_text:'#e0d0ff',nav_hover:'#ffffff',body_bg:'#ffffff',text:'#3a2a4a',link:'#9b59b6'},
+  {id:'scuro',   label:'Dark',     accent:'#a89fff',accent_dark:'#8a7fe0',nav_bg:'#1a1a2e',nav_text:'#e0e0ff',nav_hover:'#ffffff',body_bg:'#111827',text:'#e0e0e0',link:'#a89fff'},
+  {id:'custom',  label:'Custom ✏️', accent:'#6c63ff',accent_dark:'#5a52e0',nav_bg:'#ffffff',nav_text:'#111111',nav_hover:'#555555',body_bg:'#ffffff',text:'#3a3a3a',link:'#6c63ff'},
 ];
-let _temaCorrente='default';
-let _configSha=null;
+let _paletteCorrente='pulito';
+let _temaSha=null;
 
-function renderTemaGrid(){
-  document.getElementById('tema-grid').innerHTML=SKINS.map(s=>`
-    <div onclick="selezionaTema('${s.id}')" id="skin-${s.id}" style="
-      cursor:pointer;border-radius:10px;padding:14px 10px;text-align:center;
-      background:${s.bg};border:3px solid ${_temaCorrente===s.id?s.accent:'#e0e0e0'};
-      transition:border .15s;box-shadow:0 1px 4px rgba(0,0,0,.08)">
-      <div style="font-size:22px;margin-bottom:6px;background:${s.accent};width:36px;height:36px;border-radius:50%;margin:0 auto 8px;"></div>
-      <div style="font-size:12px;font-weight:700;color:${s.text==='#eee'?'#555':s.text}">${s.label}</div>
-      ${_temaCorrente===s.id?`<div style="font-size:10px;color:${s.accent};font-weight:700;margin-top:3px">✓ Attivo</div>`:''}
+function renderPalette(){
+  document.getElementById('palette-grid').innerHTML=PALETTES.map(p=>`
+    <div onclick="selezionaPalette('${p.id}')" style="cursor:pointer;border-radius:10px;padding:10px 8px;text-align:center;border:3px solid ${_paletteCorrente===p.id?p.accent:'#e0e0e0'};background:${p.body_bg};transition:border .15s;box-shadow:0 1px 4px rgba(0,0,0,.07)">
+      <div style="display:flex;justify-content:center;gap:4px;margin-bottom:6px">
+        <div style="width:16px;height:16px;border-radius:50%;background:${p.nav_bg};border:1.5px solid #ccc"></div>
+        <div style="width:16px;height:16px;border-radius:50%;background:${p.accent}"></div>
+        <div style="width:16px;height:16px;border-radius:50%;background:${p.text};border:1.5px solid #ccc"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#444">${p.label}</div>
+      ${_paletteCorrente===p.id?`<div style="font-size:9px;color:${p.accent};font-weight:700;margin-top:2px">✓ Attivo</div>`:''}
     </div>`).join('');
 }
-function selezionaTema(id){_temaCorrente=id;renderTemaGrid();}
+function selezionaPalette(id){
+  _paletteCorrente=id;
+  const p=PALETTES.find(x=>x.id===id);
+  if(p&&id!=='custom'){
+    document.getElementById('t-accent').value=p.accent;
+    document.getElementById('t-nav-bg').value=p.nav_bg;
+    document.getElementById('t-nav-text').value=p.nav_text;
+    document.getElementById('t-body-bg').value=p.body_bg;
+    document.getElementById('t-text').value=p.text;
+    document.getElementById('t-link').value=p.link;
+  }
+  renderPalette();
+}
+function darkenHex(hex,pct){
+  const n=parseInt(hex.replace('#',''),16);
+  const d=Math.round(2.55*Math.abs(pct))*(pct>0?-1:1);
+  const r=Math.min(255,Math.max(0,(n>>16)+d));
+  const g=Math.min(255,Math.max(0,((n>>8)&255)+d));
+  const b=Math.min(255,Math.max(0,(n&255)+d));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
 async function caricaTema(){
-  const res=await ghGet('_config.yml');
-  if(!res.ok)return;
-  const d=await res.json();_configSha=d.sha;
-  const yaml=dec(d.content);
-  const m=yaml.match(/minimal_mistakes_skin:\s*(\S+)/);
-  if(m)_temaCorrente=m[1];
-  renderTemaGrid();
+  const res=await ghGet('_data/tema.json');
+  if(!res.ok){renderPalette();return;}
+  const d=await res.json();_temaSha=d.sha;
+  const t=JSON.parse(dec(d.content));
+  document.getElementById('t-accent').value=t.accent||'#6c63ff';
+  document.getElementById('t-nav-bg').value=t.nav_bg||'#ffffff';
+  document.getElementById('t-nav-text').value=t.nav_text||'#111111';
+  document.getElementById('t-body-bg').value=t.body_bg||'#ffffff';
+  document.getElementById('t-text').value=t.text||'#3a3a3a';
+  document.getElementById('t-link').value=t.link||'#6c63ff';
+  renderPalette();
 }
 async function salvaTema(){
   if(!tok())return showMsg('msg-tema','⚠️ Token mancante.','err');
-  showMsg('msg-tema','⏳ Caricamento config...','');
-  const res=await ghGet('_config.yml');
-  if(!res.ok)return showMsg('msg-tema','❌ Impossibile leggere _config.yml','err');
-  const d=await res.json();_configSha=d.sha;
-  let yaml=dec(d.content);
-  yaml=yaml.replace(/minimal_mistakes_skin:\s*\S+/,`minimal_mistakes_skin: ${_temaCorrente}`);
+  const accent=document.getElementById('t-accent').value;
+  const navText=document.getElementById('t-nav-text').value;
+  const tema={
+    accent,
+    accent_dark:darkenHex(accent,15),
+    nav_bg:document.getElementById('t-nav-bg').value,
+    nav_text:navText,
+    nav_hover:darkenHex(navText,-20),
+    body_bg:document.getElementById('t-body-bg').value,
+    text:document.getElementById('t-text').value,
+    link:document.getElementById('t-link').value
+  };
   showMsg('msg-tema','⏳ Salvataggio...','');
-  const putRes=await ghPut('_config.yml',`Cambia tema: ${_temaCorrente}`,yaml,_configSha);
-  const j=await putRes.json();
-  if(putRes.ok){_configSha=j.content.sha;showMsg('msg-tema',`✅ Tema "${_temaCorrente}" applicato! Live in ~60s.`,'ok');startDeployPolling();}
+  const res=await ghPut('_data/tema.json','Aggiorna tema sito',JSON.stringify(tema,null,2),_temaSha||undefined);
+  const j=await res.json();
+  if(res.ok){_temaSha=j.content.sha;showMsg('msg-tema','✅ Tema applicato! Live in ~60s.','ok');startDeployPolling();}
   else showMsg('msg-tema','❌ '+j.message,'err');
 }
 
