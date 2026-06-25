@@ -1,0 +1,8 @@
+{% comment %}
+  Include generico per il box system. Stampa i box attivi, in ordine, di un file _data/blocks_*.json.
+  Uso: {% include render-blocks.html data="blocks_about" %}
+{% endcomment %}
+{% assign blocks = site.data[include.data] %}
+{% for block in blocks %}{% if block.enabled %}
+{{ block.html | replace: '__BASEURL__', site.baseurl }}
+{% endif %}{% endfor %}

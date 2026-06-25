@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -115,7 +115,6 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
     <div class="nav-label">Contenuti</div>
     <button class="nav-item active" onclick="showPage('articoli',this)"><span class="icon">📝</span>Articoli</button>
     <button class="nav-item" onclick="showPage('pagine',this)"><span class="icon">📄</span>Pagine</button>
-    <button class="nav-item" onclick="showPage('blocchi',this);caricaBlocchi()"><span class="icon">🧩</span>Blocchi</button>
     <button class="nav-item" onclick="showPage('categorie',this)"><span class="icon">🗂</span>Categorie</button>
     <div class="nav-label">Impostazioni</div>
     <button class="nav-item" onclick="showPage('menu',this)"><span class="icon">🧭</span>Menu</button>
@@ -225,46 +224,11 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <div class="field"><label>Titolo</label><input type="text" id="pag-titolo"></div>
         <div class="field"><label>Descrizione SEO <span style="font-weight:400;color:#bbb">(opzionale — appare nei risultati Google)</span></label><input type="text" id="pag-description" placeholder="Breve descrizione della pagina..."></div>
         <div class="field">
-          <label>Contenuto</label>
-          <div class="editor-toggle">
-            <button id="btn-pag-visuale" onclick="setPagEditor('visuale')">✏️ Visuale</button>
-            <button id="btn-pag-html" onclick="setPagEditor('html')">🔣 HTML grezzo</button>
-            <button class="active" id="btn-pag-md" onclick="setPagEditor('markdown')">📝 Markdown</button>
+          <label>Sezioni della pagina</label>
+          <div id="lista-pag-blocchi"><span style="color:#bbb;font-size:13px">Caricamento...</span></div>
+          <div style="margin-top:10px">
+            <button class="btn btn-secondary btn-sm" onclick="aggiungiPagBlocco()">✚ Nuovo box HTML</button>
           </div>
-          <div id="pag-quill-box" style="display:none">
-            <div class="vis-toolbar">
-              <select onchange="fmtPag(this.value);this.value=''">
-                <option value="">Paragrafo</option>
-                <option value="h1">Titolo 1</option>
-                <option value="h2">Titolo 2</option>
-                <option value="h3">Titolo 3</option>
-                <option value="p">Testo</option>
-              </select>
-              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('bold')" title="Grassetto"><b>B</b></button>
-              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('italic')" title="Corsivo"><i>I</i></button>
-              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('strikeThrough')" title="Barrato"><s>S</s></button>
-              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('insertUnorderedList')" title="Lista">≡</button>
-              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('insertOrderedList')" title="Lista numerata">1.</button>
-              <button onclick="insertLinkPag()" title="Link">🔗</button>
-              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('removeFormat')" title="Rimuovi formato">✕</button>
-            </div>
-            <div id="pag-vis-editor" contenteditable="true" style="min-height:260px;border:1.5px solid #e8e8e8;border-radius:0 0 7px 7px;padding:12px 14px;font-size:14px;line-height:1.8;outline:none;background:white;overflow-y:auto"></div>
-          </div>
-          <div id="pag-md-box">
-            <div class="vis-toolbar">
-              <button onclick="mdInsert('# ','','pag-md')" title="H1"><b>H1</b></button>
-              <button onclick="mdInsert('## ','','pag-md')" title="H2"><b>H2</b></button>
-              <button onclick="mdInsert('### ','','pag-md')" title="H3"><b>H3</b></button>
-              <button onclick="mdInsert('**','**','pag-md')" title="Grassetto"><b>B</b></button>
-              <button onclick="mdInsert('*','*','pag-md')" title="Corsivo"><i>I</i></button>
-              <button onclick="mdInsert('- ','','pag-md')" title="Lista">≡</button>
-              <button onclick="mdInsert('[','](url)','pag-md')" title="Link">🔗</button>
-              <button onclick="mdInsert('---
-','','pag-md')" title="Separatore">—</button>
-            </div>
-            <textarea id="pag-md" class="md" placeholder="Scrivi in Markdown..." style="border-radius:0 0 7px 7px;border-top:none;min-height:280px"></textarea>
-          </div>
-          <textarea class="sm" id="pag-corpo" style="display:none"></textarea>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva</button>
@@ -299,28 +263,6 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <button class="btn btn-primary" onclick="salvaMenu()">💾 Salva menu</button>
         </div>
         <div class="msg" id="msg-menu"></div>
-      </div>
-    </div>
-
-    <!-- BLOCCHI -->
-    <div class="page" id="page-blocchi">
-      <div class="page-title">🧩 Blocchi</div>
-      <div class="card">
-        <div class="field" style="margin-bottom:10px">
-          <label>Pagina</label>
-          <select id="blocchi-pagina" onchange="caricaBlocchi()">
-            <option value="blocks_home">Home</option>
-          </select>
-        </div>
-        <div class="card-title" style="display:flex;justify-content:space-between">Sezioni della pagina <button class="btn btn-secondary btn-sm" onclick="caricaBlocchi()">↻ Aggiorna</button></div>
-        <div id="lista-blocchi"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
-        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #f0f0f0">
-          <button class="btn btn-secondary btn-sm" onclick="aggiungiBlocco()">✚ Nuovo box HTML</button>
-        </div>
-        <div class="btn-group" style="margin-top:12px">
-          <button class="btn btn-primary" onclick="salvaBlocchi()">💾 Salva blocchi</button>
-        </div>
-        <div class="msg" id="msg-blocchi"></div>
       </div>
     </div>
 
@@ -939,48 +881,6 @@ async function salvaMenu(){
   else showMsg('msg-menu','❌ '+j.message,'err');
 }
 
-// BLOCCHI (box system, generico per pagina)
-let _blocchi=[],_blocchiSha=null,_blocchiFile='blocks_home';
-async function caricaBlocchi(){
-  _blocchiFile=document.getElementById('blocchi-pagina').value;
-  const res=await ghGet('_data/'+_blocchiFile+'.json');
-  if(!res.ok)return showMsg('msg-blocchi','❌ Errore caricamento.','err');
-  const d=await res.json();_blocchiSha=d.sha;
-  try{_blocchi=JSON.parse(dec(d.content));}catch(e){_blocchi=[];}
-  renderBlocchi();
-}
-function renderBlocchi(){
-  document.getElementById('lista-blocchi').innerHTML=_blocchi.map((b,i)=>`
-    <div class="menu-row" style="align-items:flex-start;flex-direction:column;gap:8px">
-      <div style="display:flex;gap:8px;align-items:center;width:100%">
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <button class="btn btn-secondary btn-sm" style="padding:1px 7px;font-size:11px;line-height:1" onclick="blockSu(${i})" ${i===0?'disabled':''}>▲</button>
-          <button class="btn btn-secondary btn-sm" style="padding:1px 7px;font-size:11px;line-height:1" onclick="blockGiu(${i})" ${i===_blocchi.length-1?'disabled':''}>▼</button>
-        </div>
-        <input type="text" value="${(b.nome||b.id||'').replace(/"/g,'&quot;')}" onchange="_blocchi[${i}].nome=this.value" placeholder="Nome sezione" style="flex:1;font-weight:600">
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#555;white-space:nowrap">
-          <input type="checkbox" ${b.enabled?'checked':''} onchange="_blocchi[${i}].enabled=this.checked" style="width:auto">Attivo
-        </label>
-        <button class="btn btn-danger btn-sm" onclick="if(confirm('Eliminare questo box?')){_blocchi.splice(${i},1);renderBlocchi();}">🗑</button>
-      </div>
-      <textarea class="sm" style="width:100%;min-height:120px;font-size:12px" onchange="_blocchi[${i}].html=this.value" placeholder="HTML del box...">${(b.html||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
-    </div>`).join('')||'<span style="color:#bbb;font-size:13px">Nessun box. Aggiungine uno qui sotto.</span>';
-}
-function blockSu(i){if(i===0)return;var t=_blocchi.splice(i,1)[0];_blocchi.splice(i-1,0,t);renderBlocchi();}
-function blockGiu(i){if(i===_blocchi.length-1)return;var t=_blocchi.splice(i,1)[0];_blocchi.splice(i+1,0,t);renderBlocchi();}
-function aggiungiBlocco(){
-  _blocchi.push({id:'box'+Date.now(),nome:'Nuovo box',enabled:true,html:'<section style="padding:40px;text-align:center">\n  <h2>Nuovo box</h2>\n  <p>Scrivi qui il tuo HTML.</p>\n</section>'});
-  renderBlocchi();
-}
-async function salvaBlocchi(){
-  if(!tok())return showMsg('msg-blocchi','⚠️ Token mancante.','err');
-  showMsg('msg-blocchi','⏳ Salvataggio...','');
-  const res=await ghPut('_data/'+_blocchiFile+'.json','Aggiorna blocchi '+_blocchiFile,JSON.stringify(_blocchi,null,2),_blocchiSha);
-  const j=await res.json();
-  if(res.ok){_blocchiSha=j.content.sha;showMsg('msg-blocchi','✅ Blocchi salvati! Live in ~60s.','ok');}
-  else showMsg('msg-blocchi','❌ '+j.message,'err');
-}
-
 // EDITOR PAGINE
 // EDITOR PAGINE — 3 modalità: visuale (default) / html / markdown
 let _pagEditorMode='visuale';
@@ -1041,24 +941,56 @@ function insertLinkPag(){
   document.execCommand('createLink',false,url);
 }
 
+// BLOCCHI (box system, generico per pagina) — stato dell'editor pagina corrente
+let _pagBlocchi=[],_pagBlocchiSha=null,_pagBlocchiFile=null;
+function renderPagBlocchi(){
+  document.getElementById('lista-pag-blocchi').innerHTML=_pagBlocchi.map((b,i)=>`
+    <div class="menu-row" style="align-items:flex-start;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:center;width:100%">
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <button class="btn btn-secondary btn-sm" style="padding:1px 7px;font-size:11px;line-height:1" onclick="pagBlockSu(${i})" ${i===0?'disabled':''}>▲</button>
+          <button class="btn btn-secondary btn-sm" style="padding:1px 7px;font-size:11px;line-height:1" onclick="pagBlockGiu(${i})" ${i===_pagBlocchi.length-1?'disabled':''}>▼</button>
+        </div>
+        <input type="text" value="${(b.nome||b.id||'').replace(/"/g,'&quot;')}" onchange="_pagBlocchi[${i}].nome=this.value" placeholder="Nome sezione" style="flex:1;font-weight:600">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#555;white-space:nowrap">
+          <input type="checkbox" ${b.enabled?'checked':''} onchange="_pagBlocchi[${i}].enabled=this.checked" style="width:auto">Attivo
+        </label>
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('Eliminare questo box?')){_pagBlocchi.splice(${i},1);renderPagBlocchi();}">🗑️</button>
+      </div>
+      <textarea class="sm" style="width:100%;min-height:120px;font-size:12px" onchange="_pagBlocchi[${i}].html=this.value" placeholder="HTML del box...">${(b.html||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+    </div>`).join('')||'<span style="color:#bbb;font-size:13px">Nessun box. Aggiungine uno qui sotto.</span>';
+}
+function pagBlockSu(i){if(i===0)return;var t=_pagBlocchi.splice(i,1)[0];_pagBlocchi.splice(i-1,0,t);renderPagBlocchi();}
+function pagBlockGiu(i){if(i===_pagBlocchi.length-1)return;var t=_pagBlocchi.splice(i,1)[0];_pagBlocchi.splice(i+1,0,t);renderPagBlocchi();}
+function aggiungiPagBlocco(){
+  _pagBlocchi.push({id:'box'+Date.now(),nome:'Nuovo box',enabled:true,html:'<section style="padding:40px;text-align:center">\n  <h2>Nuovo box</h2>\n  <p>Scrivi qui il tuo HTML.</p>\n</section>'});
+  renderPagBlocchi();
+}
+
 // PAGINE
-// PAGINE
+// PAGINE — gestite col box system (blocchi). Le pagine di sistema (template Liquid dinamici)
+// sono escluse perché contengono logica del sito, non contenuto editabile a blocchi statici.
+const PAGINE_SISTEMA=['404.md','blog.md','cat-list.md','categoria.md','category-archive.md','novita.md','shop-carrello.md','shop-cat-abbigliamento.md','shop-prodotto.md','shop.md','tag-archive.md','year-archive.md'];
 async function caricaPagine(){
   if(!tok())return;
   const res=await ghGet('_pages');if(!res.ok)return;
   const files=await res.json();
   const homeRow=`<div class="list-row" style="background:#fffbeb;border-radius:7px;padding:10px;margin-bottom:8px">
-    <span>🏠 <strong>home</strong> <span style="font-size:11px;color:#aaa">— pagina principale del sito</span></span>
-    <button class="btn btn-secondary btn-sm" onclick="modificaHomeContent()">✏️ Modifica</button>
+    <span>🏠 <strong>Home</strong> <span style="font-size:11px;color:#aaa">— pagina principale del sito</span></span>
+    <button class="btn btn-secondary btn-sm" onclick="modificaPaginaBox('home',null)">🧩 Modifica</button>
   </div>`;
-  document.getElementById('lista-pagine').innerHTML=homeRow+files.map(f=>`
+  const visibili=files.filter(f=>!PAGINE_SISTEMA.includes(f.name));
+  document.getElementById('lista-pagine').innerHTML=homeRow+visibili.map(f=>{
+    const slug=f.name.replace(/\.md$/,'');
+    return `
     <div class="list-row">
-      <span>${f.name.replace(/\.md$/,'')}</span>
+      <span>${slug}</span>
       <div style="display:flex;gap:6px">
-        <button class="btn btn-secondary btn-sm" onclick="modificaPagina('${f.path}','${f.sha}')">✏️ Modifica</button>
+        <button class="btn btn-secondary btn-sm" onclick="modificaPaginaBox('${slug}','${f.path}')">🧩 Modifica</button>
         <button class="btn btn-danger btn-sm" onclick="eliminaPagina('${f.path}','${f.sha}','${f.name}')">🗑️ Elimina</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function eliminaPagina(path,sha,nome){
@@ -1077,94 +1009,98 @@ async function eliminaPagina(path,sha,nome){
   }catch(e){showMsg('msg-pag','❌ Errore: '+e.message,'err');}
 }
 
-async function modificaHomeContent(){
-  const res=await ghGet('_includes/home-content.html');
-  if(!res.ok)return showMsg('msg-pag','❌ Errore caricamento home.','err');
-  const d=await res.json();
-  _paginaPath='_includes/home-content.html';
-  _paginaSha=d.sha;
-  document.getElementById('pag-titolo').value='Home';
-  setPagCorpo(dec(d.content));
-  setPagEditor('html'); // home è HTML strutturato — grezzo è più utile del visuale
-  document.getElementById('nome-pagina').textContent='home-content.html (Home)';
+// Apre l'editor a box per qualsiasi pagina (Home o pagina normale).
+// slug: es. 'home', 'about'. path: path del file .md su GitHub (null per Home).
+async function modificaPaginaBox(slug,path){
+  _paginaPath=path;_paginaSha=null;
+  _pagBlocchiFile='_data/blocks_'+slug+'.json';
+  window._paginaSlug=slug;
   document.getElementById('pag-permalink-field').style.display='none';
+  document.getElementById('nome-pagina').textContent=slug==='home'?'Home':slug;
+  document.getElementById('msg-pag').style.display='none';
+  showMsg('msg-pag','Caricamento...','');document.getElementById('msg-pag').style.display='block';
+  window._paginaFrontmatter='';
+  document.getElementById('pag-titolo').value=slug==='home'?'Home':'';
+  document.getElementById('pag-description').value='';
+  if(path){
+    const resPag=await ghGet(path);
+    if(resPag.ok){
+      const dPag=await resPag.json();
+      _paginaSha=dPag.sha;
+      const content=dec(dPag.content);
+      const fm=content.match(/^---\n([\s\S]*?)\n---/);
+      const titleMatch=(fm?fm[1]:'').match(/title:\s*"?([^"\n]+)"?/);
+      const descMatch=(fm?fm[1]:'').match(/description:\s*"?([^"\n]+)"?/);
+      window._paginaFrontmatter=fm?fm[0]+'\n':'';
+      document.getElementById('pag-titolo').value=titleMatch?titleMatch[1].trim():'';
+      document.getElementById('pag-description').value=descMatch?descMatch[1].trim():'';
+    }
+  }
+  const resBlk=await ghGet(_pagBlocchiFile);
+  if(resBlk.ok){
+    const dBlk=await resBlk.json();
+    _pagBlocchiSha=dBlk.sha;
+    try{_pagBlocchi=JSON.parse(dec(dBlk.content));}catch(e){_pagBlocchi=[];}
+  } else {
+    _pagBlocchiSha=null;
+    _pagBlocchi=[];
+  }
+  renderPagBlocchi();
+  document.getElementById('msg-pag').style.display='none';
   document.getElementById('pag-lista-view').style.display='none';
   document.getElementById('pag-editor-view').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-async function modificaPagina(path,sha){
-  const res=await ghGet(path);const d=await res.json();
-  const content=dec(d.content);
-  const fm=content.match(/^---\n([\s\S]*?)\n---/);
-  const corpo=content.replace(/^---[\s\S]*?---\n\n?/,'');
-  const titleMatch=(fm?fm[1]:'').match(/title:\s*"?([^"\n]+)"?/);
-  const descMatch=(fm?fm[1]:'').match(/description:\s*"?([^"\n]+)"?/);
-  _paginaPath=d.path||path;_paginaSha=d.sha;
-  // Salva frontmatter originale completo (es. author_profile:false, permalink custom).
-  // ⚠️ fm[0] e' il match di /^---[\s\S]*?---/ — NON include il \n\n dopo il ---.
-  // Il \n\n viene aggiunto in salvaPagina con trimEnd()+'\n\n'+corpo.
-  window._paginaFrontmatter=fm?fm[0]+'\n':'';
-  document.getElementById('pag-titolo').value=titleMatch?titleMatch[1].trim():'';
-  document.getElementById('pag-description').value=descMatch?descMatch[1].trim():'';
-  setPagCorpo(corpo);
-  setPagEditor('markdown');
-  document.getElementById('nome-pagina').textContent=path.split('/').pop();
-  document.getElementById('pag-permalink-field').style.display='none';
-  document.getElementById('pag-lista-view').style.display='none';
-  document.getElementById('pag-editor-view').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-// AVVISO: usare _paginaSha||undefined, stringa vuota causa errore 422
 async function salvaPagina(){
   try{
-    if(!tok())return showMsg('msg-pag','⚠️ Token mancante.','err');
+    if(!tok())return showMsg('msg-pag','Token mancante.','err');
     const titolo=(document.getElementById('pag-titolo').value||'Pagina').trim();
     const desc=(document.getElementById('pag-description').value||'').trim();
-    const corpo=getPagCorpo().trim()||' ';
-    let content;
-    if(_paginaPath==='_includes/home-content.html'){
-      content=corpo;
-    } else if(_paginaPath){
-      // Preserva il frontmatter originale, aggiorna titolo e description
+    const slugAttuale=window._paginaSlug||titolo.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    window._paginaSlug=slugAttuale;
+    _pagBlocchiFile='_data/blocks_'+slugAttuale+'.json';
+    let dots=0;
+    const timer=setInterval(()=>{dots=(dots+1)%4;showMsg('msg-pag','Invio a GitHub'+'.'.repeat(dots),'ok');},400);
+    // 1) Salva i blocchi (sempre necessario)
+    const resBlk=await ghPut(_pagBlocchiFile,'Aggiorna blocchi: '+titolo,JSON.stringify(_pagBlocchi,null,2),_pagBlocchiSha||undefined);
+    const jBlk=await resBlk.json();
+    if(!resBlk.ok){clearInterval(timer);return showMsg('msg-pag',(jBlk.message||'Errore blocchi'),'err');}
+    _pagBlocchiSha=jBlk.content.sha;
+    // 2) Se non e' la Home, salva/crea anche il file .md con frontmatter + include ai blocchi
+    if(slugAttuale!=='home'){
       let fm=window._paginaFrontmatter||'';
+      let content;
       if(fm){
         fm=fm.replace(/title:\s*"[^"]*"/,'title: "'+titolo+'"');
-        // Aggiorna o aggiungi description
         if(desc){
           if(/description:/.test(fm)) fm=fm.replace(/description:\s*"?[^"\n]+"?/,'description: "'+desc+'"');
           else fm=fm.replace(/^---\n/,'---\ndescription: "'+desc+'"\n');
         } else {
           fm=fm.replace(/description:\s*"?[^"\n]+"?\n?/g,'');
         }
-        // ⚠️ CRITICO: Jekyll richiede esattamente \n\n tra fine frontmatter (---) e corpo.
-        // fm.trimEnd() rimuove spazi/newline extra dalla fine del frontmatter estratto.
-        // Se si usa \n invece di \n\n Jekyll non riconosce il frontmatter e lo mostra come testo.
-        // fm finisce con --- senza newline — aggiungiamo \n\n prima del corpo
-        content=fm.trimEnd()+'\n\n'+corpo;
+        content=fm.trimEnd()+'\n\n{% include render-blocks.html data="blocks_'+slugAttuale+'" %}';
       } else {
-        const slug=_paginaPath.split('/').pop().replace('.md','');
-        content='---\nlayout: single\ntitle: "'+titolo+'"'+(desc?'\ndescription: "'+desc+'"':'')+'\npermalink: /'+slug+'/\nauthor_profile: true\n---\n\n'+corpo;
+        const permalinkInput=document.getElementById('pag-permalink');
+        const permalink=(permalinkInput&&permalinkInput.value.trim())||'/'+slugAttuale+'/';
+        content='---\nlayout: single\ntitle: "'+titolo+'"'+(desc?'\ndescription: "'+desc+'"':'')+'\npermalink: '+permalink+'\nauthor_profile: true\n---\n\n{% include render-blocks.html data="blocks_'+slugAttuale+'" %}';
       }
+      _paginaPath=_paginaPath||('_pages/'+slugAttuale+'.md');
+      const resPag=await ghPut(_paginaPath,'Aggiorna pagina: '+titolo,content,_paginaSha||undefined);
+      const jPag=await resPag.json();
+      clearInterval(timer);
+      if(!resPag.ok)return showMsg('msg-pag',(jPag.message||'Errore pagina'),'err');
+      _paginaSha=jPag.content.sha;
     } else {
-      const slug=titolo.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-      const permalink=document.getElementById('pag-permalink').value.trim()||'/'+(slug||'nuova-pagina')+'/';
-      _paginaPath='_pages/'+(slug||'nuova-pagina')+'.md';
-      content='---\nlayout: single\ntitle: "'+titolo+'"'+(desc?'\ndescription: "'+desc+'"':'')+'\npermalink: '+permalink+'\nauthor_profile: true\n---\n\n'+corpo;
+      clearInterval(timer);
     }
-    let dots=0;
-    const timer=setInterval(()=>{dots=(dots+1)%4;showMsg('msg-pag','⏳ Invio a GitHub'+'.'.repeat(dots),'ok');},400);
-    const res=await ghPut(_paginaPath,'Aggiorna pagina: '+titolo,content,_paginaSha||undefined);
-    clearInterval(timer);
-    const j=await res.json();
-    if(res.ok){_paginaSha=j.content.sha;showMsg('msg-pag','✅ Salvata! Torno alla lista...','ok');startDeployPolling();setTimeout(()=>tornaPagine(),1200);}
-    else showMsg('msg-pag','❌ '+j.message,'err');
-  }catch(e){showMsg('msg-pag','❌ Errore: '+e.message,'err');}
+    showMsg('msg-pag','Salvata! Torno alla lista...','ok');
+    startDeployPolling();setTimeout(()=>tornaPagine(),1200);
+  }catch(e){showMsg('msg-pag','Errore: '+e.message,'err');}
 }
 function anteprimaPagina(){
   const base=location.origin+location.pathname.replace(/\/admin\/?.*$/,'/');
-  const urlMap={'_includes/home-content.html':base,'_pages/about.md':base+'about/','_pages/blog.md':base+'blog/'};
-  const slug=_paginaPath.split('/').pop().replace('.md','');
-  const url=urlMap[_paginaPath]||`${base}${slug}/`;
+  const slug=window._paginaSlug||'';
+  const url=slug==='home'?base:`${base}${slug}/`;
   const box=document.getElementById('preview-pagina-box');
   document.getElementById('preview-pagina-frame').src=url;
   box.style.display='block';box.scrollIntoView({behavior:'smooth'});
@@ -1180,14 +1116,13 @@ function tornaPagine(){
   caricaPagine();
 }
 function apriNuovaPagina(){
-  _paginaPath=null;_paginaSha=null;
+  _paginaPath=null;_paginaSha=null;_pagBlocchiSha=null;_pagBlocchiFile=null;
+  window._paginaSlug=null;window._paginaFrontmatter='';
+  _pagBlocchi=[{id:'main',nome:'Contenuto',enabled:true,html:'<section style="padding:40px;text-align:center">\n  <h2>Nuova pagina</h2>\n  <p>Scrivi qui il tuo contenuto.</p>\n</section>'}];
   document.getElementById('pag-titolo').value='';
   document.getElementById('pag-permalink').value='';
   document.getElementById('pag-permalink-field').style.display='block';
-  document.getElementById('pag-vis-editor').innerHTML='';
-  document.getElementById('pag-corpo').value='';
-  document.getElementById('pag-md').value='';
-  setPagEditor('visuale');
+  renderPagBlocchi();
   document.getElementById('nome-pagina').textContent='Nuova pagina';
   document.getElementById('msg-pag').style.display='none';
   document.getElementById('preview-pagina-box').style.display='none';

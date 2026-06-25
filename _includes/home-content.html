@@ -3,7 +3,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.0/alpine.js"></script>
 
 <main id="main-content">
-{% for block in site.data.blocks_home %}{% if block.enabled %}
-{{ block.html | replace: '__BASEURL__', site.baseurl }}
-{% endif %}{% endfor %}
+{% include render-blocks.html data="blocks_home" %}
 </main>
