@@ -735,11 +735,21 @@ function startDeployPolling(){
   },10000);
 }
 
+const _tabCaricato={};
 function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
+  if(!tok()||_tabCaricato[id])return;
+  _tabCaricato[id]=true;
+  if(id==='pagine')caricaPagine();
+  if(id==='menu')caricaMenu();
+  if(id==='tema')caricaTema();
+  if(id==='impostazioni')caricaImpostazioni();
+  if(id==='prodotti'){caricaProdotti();if(!_tabCaricato['cat-prodotti']){caricaCatShop();_tabCaricato['cat-prodotti']=true;}}
+  if(id==='cat-prodotti')caricaCatShop();
+  if(id==='aggiornamenti')controllaAggiornamenti();
 }
 // TOKEN
 // TOKEN
@@ -1126,12 +1136,8 @@ function anteprima(){
   document.getElementById('preview-box').style.display='block';
   document.getElementById('preview-box').scrollIntoView({behavior:'smooth'});
 }
-async function caricaLista(){
-  if(!tok())return;
-  document.getElementById('lista-articoli').innerHTML='<span style="color:#bbb;font-size:13px">⏳ Caricamento...</span>';
-  const res=await ghGet('_posts');if(!res.ok)return;
-  const files=await res.json();
-  document.getElementById('lista-articoli').innerHTML=files.reverse().map(f=>`
+function _renderListaArt(files){
+  document.getElementById('lista-articoli').innerHTML=files.slice().reverse().map(f=>`
     <div class="list-row">
       <span>${f.name.replace(/\.md$/,'')}</span>
       <div style="display:flex;gap:6px">
@@ -1139,6 +1145,16 @@ async function caricaLista(){
         <button class="btn btn-danger btn-sm" onclick="eliminaArticolo('${f.path}','${f.sha}','${f.name}')">🗑️ Elimina</button>
       </div>
     </div>`).join('');
+}
+async function caricaLista(){
+  if(!tok())return;
+  const cached=JSON.parse(localStorage.getItem('cms_cache_posts')||'null');
+  if(cached)_renderListaArt(cached);
+  else document.getElementById('lista-articoli').innerHTML='<span style="color:#bbb;font-size:13px">⏳ Caricamento...</span>';
+  const res=await ghGet('_posts');if(!res.ok)return;
+  const files=await res.json();
+  localStorage.setItem('cms_cache_posts',JSON.stringify(files));
+  _renderListaArt(files);
 }
 async function modificaArticolo(path){
   const res=await ghGet(path);const data=await res.json();
@@ -1559,11 +1575,18 @@ function nuovoProdotto(){
 async function caricaProdotti(){
   const el=document.getElementById('lista-prodotti');
   if(!tok()){el.innerHTML='<em style="color:#bbb;font-size:13px">Token mancante.</em>';return;}
+  const cached=JSON.parse(localStorage.getItem('cms_cache_prodotti')||'null');
+  if(cached)_renderListaProdotti(cached);
   let res;
   try{ res=await ghGet('_products'); }
   catch(e){el.innerHTML='<em style="color:#bbb;font-size:13px">Errore di rete.</em>';return;}
   if(!res.ok){el.innerHTML='<em style="color:#bbb;font-size:13px">Cartella _products non trovata.</em>';return;}
   const files=await res.json();
+  localStorage.setItem('cms_cache_prodotti',JSON.stringify(files));
+  _renderListaProdotti(files);
+}
+function _renderListaProdotti(files){
+  const el=document.getElementById('lista-prodotti');
   const prods=files.filter(f=>f.name.endsWith('.md'));
   if(!prods.length){el.innerHTML='<em style="color:#bbb;font-size:13px">Nessun prodotto ancora.</em>';return;}
   el.innerHTML=prods.map(f=>`
@@ -1717,7 +1740,7 @@ function salvaTokenOnboarding(){
   localStorage.setItem('gh_token',t);
   document.getElementById('onboarding-overlay').style.display='none';
   document.getElementById('token-input').value=t;
-  caricaCategorie();caricaLista();caricaPagine();caricaMenu();caricaTema();caricaImpostazioni();controllaAggiornamenti();
+  caricaCategorie();caricaLista();
 }// INIT
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
@@ -1727,15 +1750,9 @@ window.onload=function(){
   if(tok()){
     document.getElementById('token-input').value=tok();
     document.getElementById('token-input').placeholder='✅ Token presente';
+    // Solo le 2 chiamate per la tab attiva (Articoli) — tutto il resto carica lazy
     caricaCategorie();
     caricaLista();
-    caricaPagine();
-    caricaMenu();
-    caricaTema();
-    caricaImpostazioni();
-    controllaAggiornamenti();
-    caricaCatShop();
-    caricaProdotti();
   }
 };
 </script>
