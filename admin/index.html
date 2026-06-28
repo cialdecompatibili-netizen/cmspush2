@@ -710,33 +710,39 @@ function legacyMdToHtml(md){
     .replace(/\n/g,'<br>');
 }
 // DEPLOY BAR — polling GitHub Actions dopo ogni salvataggio
+// _deployFakeTimer/_deployPollTimer globali: se una nuova azione (salva/elimina) parte
+// mentre il deploy precedente è ancora in polling, cancelliamo i timer vecchi prima di
+// crearne di nuovi — evita 2 animazioni/poll sovrapposti se si fanno 2 azioni vicine.
+let _deployFakeTimer=null,_deployPollTimer=null;
 function startDeployPolling(){
   const bar=document.getElementById('deploy-bar');
   const live=document.getElementById('deploy-live');
   if(!bar)return;
+  if(_deployFakeTimer)clearInterval(_deployFakeTimer);
+  if(_deployPollTimer)clearInterval(_deployPollTimer);
   live.classList.remove('show');
   bar.style.transition='none';bar.style.width='0%';
   // Animazione simulata: 0→85% in 50s, poi aspetta il deploy reale
   let pct=0;
-  const fakeTimer=setInterval(()=>{
+  _deployFakeTimer=setInterval(()=>{
     if(pct<85){pct+=pct<30?3:pct<60?1.5:.5;}
     bar.style.transition='width .8s ease';
     bar.style.width=pct+'%';
   },1200);
   // Polling reale GitHub Actions
   const token=(()=>{try{return localStorage.getItem('gh_token')||'';}catch(e){return '';}})();
-  if(!token){clearInterval(fakeTimer);bar.style.width='0%';return;}
+  if(!token){clearInterval(_deployFakeTimer);bar.style.width='0%';return;}
   let tentativi=0;
-  const pollTimer=setInterval(async()=>{
+  _deployPollTimer=setInterval(async()=>{
     tentativi++;
-    if(tentativi>24){clearInterval(pollTimer);clearInterval(fakeTimer);bar.style.width='0%';return;}
+    if(tentativi>24){clearInterval(_deployPollTimer);clearInterval(_deployFakeTimer);bar.style.width='0%';return;}
     try{
       const res=await fetch('https://api.github.com/repos/'+REPO+'/actions/runs?branch=main&per_page=5',{headers:{Authorization:'token '+token}});
       if(!res.ok)return;
       const data=await res.json();
       const run=(data.workflow_runs||[]).find(r=>r.name==='pages build and deployment');
       if(run&&run.status==='completed'){
-        clearInterval(pollTimer);clearInterval(fakeTimer);
+        clearInterval(_deployPollTimer);clearInterval(_deployFakeTimer);
         bar.style.transition='width .3s ease';bar.style.width='100%';
         setTimeout(()=>{
           bar.style.transition='width .6s ease';bar.style.width='0%';
