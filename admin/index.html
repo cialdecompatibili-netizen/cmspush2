@@ -1012,7 +1012,7 @@ async function eliminaPagina(path,sha,nome){
       body:JSON.stringify({message:'Elimina pagina: '+nome,sha:sha})
     });
     const json=await res.json();
-    if(res.ok){showMsg('msg-pag','✅ Pagina eliminata!','ok');caricaPagine();}
+    if(res.ok){showMsg('msg-pag','✅ Pagina eliminata!','ok');caricaPagine();startDeployPolling();}
     else showMsg('msg-pag','❌ '+json.message,'err');
   }catch(e){showMsg('msg-pag','❌ Errore: '+e.message,'err');}
 }
@@ -1300,7 +1300,7 @@ async function eliminaArticolo(path, sha, nome){
       body:JSON.stringify({message:`Elimina articolo: ${nome}`,sha:sha})
     });
     const json=await res.json();
-    if(res.ok){showMsg('msg-art','✅ Articolo eliminato! Aggiornamento lista...','ok');caricaLista();}
+    if(res.ok){showMsg('msg-art','✅ Articolo eliminato! Aggiornamento lista...','ok');caricaLista();startDeployPolling();}
     else showMsg('msg-art','❌ '+json.message,'err');
   }catch(e){showMsg('msg-art','❌ Errore di rete.','err');}
 }
@@ -1687,7 +1687,7 @@ async function eliminaCatShop(slug){
   if(!confirm('Eliminare la categoria?'))return;
   _shopcats=_shopcats.filter(c=>c.slug!==slug);
   const ok=await salvaCatShop();
-  if(ok){showMsg('msg-shopcat','✅ Eliminata!','ok');caricaCatShop();}
+  if(ok){showMsg('msg-shopcat','✅ Eliminata!','ok');caricaCatShop();startDeployPolling();}
   else showMsg('msg-shopcat','❌ Errore.','err');
 }
 
@@ -1780,7 +1780,7 @@ async function eliminaProdotto(path,sha){
     method:'DELETE',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
     body:JSON.stringify({message:`Elimina prodotto ${path}`,sha})
   });
-  if(res.ok){showMsg('msg-prod','✅ Eliminato!','ok');caricaProdotti();}
+  if(res.ok){showMsg('msg-prod','✅ Eliminato!','ok');caricaProdotti();startDeployPolling();}
 }
 
 // ============ INTEGRAZIONI ============
