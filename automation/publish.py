@@ -19,7 +19,7 @@ import subprocess
 import unicodedata
 from datetime import date
 
-REPO = r"C:\Users\mirco\Desktop\cmspush2"
+REPO = r"C:\Users\mirco\Desktop\cmspush2"  # root del progetto (2 livelli sopra questo script)
 
 
 def slugify(text):
