@@ -121,6 +121,30 @@ body { font-size: calc(1rem * var(--t-font-scale)); }
 @media (max-width: 600px) {
   #back-to-top-btn { bottom: 16px; right: 16px; width: 42px; height: 42px; font-size: 18px; }
 }
+
+/* IMMAGINE ARTICOLO — dentro il box, non full-width in cima (fix 2026-07-04) */
+.page__hero { display: none !important; }
+.article-inline-meta-img {
+  display: block;
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+  border-radius: var(--t-radius, 10px);
+  margin: 10px 0 18px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.10);
+}
+.article-inline-meta-img + .article-inline-caption {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin: -12px 0 18px 0;
+}
+.page__meta-category a {
+  color: var(--t-accent) !important;
+  text-decoration: none;
+  font-weight: 600;
+}
+.page__meta-category a:hover { text-decoration: underline; }
 </style>
 
 {% if site.integrations.ga4.enabled and site.integrations.ga4.id != "" %}
@@ -224,6 +248,46 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   window.addEventListener('scroll', toggleBackToTop);
   toggleBackToTop();
+
+  // --- IMMAGINE ARTICOLO dentro il box, accanto a "readtime" + categoria cliccabile (fix 2026-07-04) ---
+  (function(){
+    var hero = document.querySelector('.page__hero');
+    var meta = document.querySelector('.page__meta');
+    if (!hero || !meta) return; // pagina senza immagine o senza meta, niente da fare
+
+    var img = hero.querySelector('.page__hero-image');
+    var caption = hero.querySelector('.page__hero-caption');
+    if (!img) return;
+
+    var wrap = document.createElement('div');
+    var small = document.createElement('img');
+    small.src = img.src;
+    small.alt = img.alt;
+    small.className = 'article-inline-meta-img';
+    wrap.appendChild(small);
+
+    if (caption) {
+      var cap = document.createElement('span');
+      cap.className = 'article-inline-caption';
+      cap.textContent = caption.textContent.trim();
+      wrap.appendChild(cap);
+    }
+
+    // Inserisce il blocco immagine SUBITO DOPO il box meta (readtime/categoria), dentro l'header
+    meta.parentNode.insertBefore(wrap, meta.nextSibling);
+  })();
+
+  // --- CATEGORIA cliccabile accanto a "readtime" nel box meta ---
+  (function(){
+    var meta = document.querySelector('.page__meta');
+    if (!meta) return;
+    var catLink = document.querySelector('.page__taxonomy a.page__taxonomy-item');
+    if (!catLink) return; // pagina senza categoria (es. prodotti)
+    var span = document.createElement('span');
+    span.className = 'page__meta-category';
+    span.innerHTML = ' · <a href="' + catLink.getAttribute('href') + '">' + catLink.textContent.trim() + '</a>';
+    meta.appendChild(span);
+  })();
 
   // --- DROPDOWN SHOP (generato da _data/shop_nav.yml via Liquid) ---
   var shopCats = [{% for item in site.data.shop_nav.categories %}{"title":"{{ item.title }}","url":"{{ item.url }}"}{% unless forloop.last %},{% endunless %}{% endfor %}];
