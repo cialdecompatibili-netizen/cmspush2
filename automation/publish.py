@@ -139,10 +139,12 @@ def verifica_live(url, tentativi=18, intervallo=10):
     return False
 
 
-def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None, verifica=True):
+def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None, verifica=True, image=None, image_caption=None):
     """Crea _posts/YYYY-MM-DD-slug.md con front-matter pulito, fa commit+push.
-    Valida categoria, caratteri YAML, duplicati. Verifica live (200) dopo il push se verifica=True."""
-    _check_yaml_safe(titolo, categoria, excerpt)
+    Valida categoria, caratteri YAML, duplicati. Verifica live (200) dopo il push se verifica=True.
+    image: URL opzionale, mostrato come hero image in cima all'articolo (page.header.image, gia' supportato da _layouts/single.html).
+    image_caption: didascalia opzionale sotto l'immagine hero."""
+    _check_yaml_safe(titolo, categoria, excerpt, image_caption)
     _check_categoria_articolo(categoria)
 
     d = data or date.today().isoformat()
@@ -159,8 +161,14 @@ def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None, verifica=Tru
         f'excerpt: "{excerpt}"\n'
         "categories:\n"
         f"  - {categoria}\n"
-        "---\n\n"
     )
+    if image:
+        fm += "header:\n"
+        fm += f'  image: "{image}"\n'
+        fm += f'  teaser: "{image}"\n'
+        if image_caption:
+            fm += f'  caption: "{image_caption}"\n'
+    fm += "---\n\n"
     with open(fpath, "w", encoding="utf-8", newline="\n") as f:
         f.write(fm + corpo.strip() + "\n")
 
