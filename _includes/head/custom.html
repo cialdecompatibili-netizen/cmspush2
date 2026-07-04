@@ -351,6 +351,77 @@ document.addEventListener('DOMContentLoaded', function(){
     if (icon) rt.insertBefore(icon, rt.firstChild);
   })();
 
+  // --- TRADUZIONE resto UI in italiano (2026-07-04) ---
+  (function(){
+    function traduciTesto(selettore, sostituzioni) {
+      document.querySelectorAll(selettore).forEach(function(el){
+        sostituzioni.forEach(function(pair){
+          if (el.childNodes.length) {
+            el.childNodes.forEach(function(node){
+              if (node.nodeType === 3 && node.textContent.indexOf(pair[0]) !== -1) {
+                node.textContent = node.textContent.replace(pair[0], pair[1]);
+              }
+            });
+          }
+        });
+      });
+    }
+
+    // Categories: / Updated:
+    traduciTesto('.page__taxonomy strong', [['Categories:', 'Categorie:']]);
+    traduciTesto('.page__date strong', [['Updated:', 'Aggiornato:']]);
+
+    // Previous / Next (paginazione articolo)
+    document.querySelectorAll('.pagination--pager').forEach(function(a){
+      var t = a.textContent.trim();
+      if (t === 'Previous') a.textContent = 'Precedente';
+      if (t === 'Next') a.textContent = 'Successivo';
+    });
+
+    // Share on (titolo box condivisione)
+    document.querySelectorAll('.page__share-title').forEach(function(el){
+      if (el.textContent.trim() === 'Share on') el.textContent = 'Condividi su';
+    });
+
+    // Toggle search / Toggle menu (aria/testo nascosto accessibilita')
+    document.querySelectorAll('.visually-hidden').forEach(function(el){
+      var t = el.textContent.trim();
+      if (t === 'Toggle search') el.textContent = 'Attiva ricerca';
+      if (t === 'Toggle menu') el.textContent = 'Attiva menu';
+    });
+
+    // Enter your search term...
+    var searchInput = document.getElementById('search');
+    if (searchInput) {
+      searchInput.placeholder = 'Scrivi il termine da cercare...';
+      var searchLabel = document.querySelector('label[for="search"]');
+      if (searchLabel) searchLabel.textContent = 'Scrivi il termine da cercare...';
+    }
+
+    // You May Also Enjoy (sezione articoli correlati)
+    document.querySelectorAll('.page__related-title').forEach(function(el){
+      if (el.textContent.trim() === 'You May Also Enjoy') el.textContent = 'Potrebbe interessarti anche';
+    });
+
+    // Follow (bio autore sidebar) / Website (link social generico)
+    document.querySelectorAll('.author__urls-wrapper .btn').forEach(function(el){
+      if (el.textContent.trim() === 'Follow') el.textContent = 'Segui';
+    });
+    document.querySelectorAll('.author__urls .label').forEach(function(el){
+      if (el.textContent.trim() === 'Website') el.textContent = 'Sito web';
+    });
+
+    // Powered by Jekyll & Minimal Mistakes (footer copyright)
+    var footerCopy = document.querySelector('.page__footer-copyright');
+    if (footerCopy) {
+      footerCopy.childNodes.forEach(function(node){
+        if (node.nodeType === 3 && node.textContent.indexOf('Powered by') !== -1) {
+          node.textContent = node.textContent.replace('Powered by', 'Realizzato con');
+        }
+      });
+    }
+  })();
+
   // --- INDICE AUTOMATICO generato dagli h2 dell'articolo, stile Wikipedia (2026-07-04) ---
   (function(){
     var content = document.querySelector('.page__content');
