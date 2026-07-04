@@ -78,6 +78,19 @@ Genera `_products\slug-nome.md` con front-matter completo (compatibile con `_lay
 
 ---
 
+## 🔒 Protezioni automatiche del motore (stabilizzato 2026-07-04)
+
+`publish.py` ora valida TUTTO da solo prima di scrivere o pushare qualsiasi file — Claude non deve piu controllare queste cose a mano:
+
+1. **Categoria inesistente** → blocca con `PublishError` ed elenca le categorie valide lette da `_data/categorie.json` (articoli) o `_data/shop-categorie.json` (prodotti). Nessun file viene scritto.
+2. **Caratteri YAML pericolosi** (`&`, `?`, `[`, `]`, `{`, `}`) in titolo/categoria/excerpt/sku/descrizione/badge/colors/sizes/shipping → blocca con `PublishError` prima di scrivere.
+3. **Duplicati** → se esiste gia' un file con lo stesso slug (`_posts/` o `_products/`), blocca invece di sovrascrivere silenziosamente.
+4. **Verifica live automatica** → dopo il push, `verifica_live(url)` fa polling reale (fino a ~3 minuti) sull'URL pubblico finche' non risponde 200, e stampa il risultato vero (non assunto). Se dopo il timeout non è ancora 200, lo dice chiaramente invece di dare per scontato che sia andato tutto bene.
+5. **Log persistente** → ogni pubblicazione riuscita viene registrata in `automation\publish_log.jsonl` (timestamp, tipo, titolo, slug, file, url) — utile per controllare lo storico senza rileggere tutto agent.md.
+6. **URL sempre corretto** → generato da `SITE_BASE` + schema permalink reale del sito (`/:categorie/:titolo/` per articoli, `/shop/:nome/` per prodotti), mai lo schema Jekyll di default.
+
+Se una `PublishError` viene sollevata, Claude legge il messaggio (contiene gia' la lista delle categorie valide o il motivo esatto) e chiede a Mirco come procedere — non aggira la validazione con codice improvvisato.
+
 ## Regole fisse (da non violare)
 
 1. **MAI scrivere XML/HTML manuali o script da zero** — usare sempre `pubblica_articolo` / `pubblica_prodotto`. Se serve un campo che la funzione non supporta, si estende `publish.py` una volta sola (non si aggira con codice improvvisato).

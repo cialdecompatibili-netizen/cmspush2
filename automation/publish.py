@@ -15,11 +15,22 @@ Oppure importa le funzioni pubblica_articolo() / pubblica_prodotto() da un altro
 import sys
 import os
 import re
+import json
+import time
 import subprocess
 import unicodedata
-from datetime import date
+import urllib.request
+import urllib.error
+from datetime import date, datetime
 
-REPO = r"C:\Users\mirco\Desktop\cmspush2"  # root del progetto (2 livelli sopra questo script)
+REPO = r"C:\Users\mirco\Desktop\cmspush2"  # root del progetto
+SITE_BASE = "https://cialdecompatibili-netizen.github.io/cmspush2"
+LOG_PATH = os.path.join(REPO, "automation", "publish_log.jsonl")
+
+
+class PublishError(Exception):
+    """Errore di validazione o pubblicazione — blocca prima di scrivere/pushare."""
+    pass
 
 
 def slugify(text):
@@ -28,6 +39,66 @@ def slugify(text):
     text = re.sub(r"[^a-z0-9]+", "-", text).strip("-")
     text = re.sub(r"-+", "-", text)
     return text
+
+
+def _check_yaml_safe(*values):
+    """Blocca caratteri che rompono il parser YAML/Jekyll (lezione da cmspush)."""
+    pericolosi = ["&", "?", "[", "]", "{", "}", "\n"]
+    for v in values:
+        if v is None:
+            continue
+        for ch in pericolosi:
+            if ch in str(v):
+                raise PublishError(
+                    f"Carattere '{ch}' non ammesso in un campo YAML (trovato in: {v!r}). "
+                    f"Riscrivere il testo senza quel simbolo prima di pubblicare."
+                )
+
+
+def _load_json(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _check_categoria_articolo(categoria):
+    path = os.path.join(REPO, "_data", "categorie.json")
+    cats = [c["nome"] for c in _load_json(path)]
+    if categoria not in cats:
+        raise PublishError(
+            f"Categoria articolo '{categoria}' non esiste in _data/categorie.json. "
+            f"Categorie valide: {cats}. Chiedere a Mirco prima di crearne una nuova."
+        )
+
+
+def _check_categoria_prodotto(categoria):
+    path = os.path.join(REPO, "_data", "shop-categorie.json")
+    cats = [c["nome"] for c in _load_json(path)]
+    if categoria not in cats:
+        raise PublishError(
+            f"Categoria prodotto '{categoria}' non esiste in _data/shop-categorie.json. "
+            f"Categorie valide: {cats}. Chiedere a Mirco prima di crearne una nuova."
+        )
+
+
+def _check_no_duplicate(fpath):
+    if os.path.exists(fpath):
+        raise PublishError(
+            f"Esiste gia' un file con lo stesso slug: {fpath}. "
+            f"Scegliere un titolo/nome diverso o usare la funzione di aggiornamento (non ancora implementata)."
+        )
+
+
+def _log(kind, titolo, slug, url, fname):
+    entry = {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "tipo": kind,
+        "titolo": titolo,
+        "slug": slug,
+        "file": fname,
+        "url": url,
+    }
+    with open(LOG_PATH, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
 def _git_push(msg):
@@ -40,15 +111,45 @@ def _git_push(msg):
     if push.returncode != 0:
         # fetch first -> pull --rebase e riprova
         subprocess.run(["git", "pull", "--rebase"], cwd=REPO, check=True)
-        subprocess.run(["git", "push"], cwd=REPO, check=True)
+        r2 = subprocess.run(["git", "push"], cwd=REPO, capture_output=True, text=True)
+        if r2.returncode != 0:
+            raise PublishError(f"git push fallito anche dopo pull --rebase: {r2.stdout} {r2.stderr}")
 
 
-def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None):
-    """Crea _posts/YYYY-MM-DD-slug.md con front-matter pulito, fa commit+push."""
+def verifica_live(url, tentativi=18, intervallo=10):
+    """Polling reale sull'URL pubblico finche' non risponde 200 (o scade il timeout).
+    GitHub Pages impiega di solito 30-90s per il build dopo un push."""
+    print(f"Verifica deploy in corso su {url} ...")
+    time.sleep(8)  # margine iniziale, il build non parte istantaneamente
+    for i in range(1, tentativi + 1):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                if resp.status == 200:
+                    print(f"OK LIVE (200) dopo {8 + (i-1)*intervallo}s -> {url}")
+                    return True
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                print(f"HTTP {e.code} al tentativo {i}, ritento...")
+        except Exception as e:
+            print(f"Errore rete al tentativo {i}: {e}, ritento...")
+        time.sleep(intervallo)
+    print(f"ATTENZIONE: {url} non ha ancora risposto 200 dopo {8 + tentativi*intervallo}s. "
+          f"Puo' essere solo lentezza del build — ricontrollare manualmente tra poco.")
+    return False
+
+
+def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None, verifica=True):
+    """Crea _posts/YYYY-MM-DD-slug.md con front-matter pulito, fa commit+push.
+    Valida categoria, caratteri YAML, duplicati. Verifica live (200) dopo il push se verifica=True."""
+    _check_yaml_safe(titolo, categoria, excerpt)
+    _check_categoria_articolo(categoria)
+
     d = data or date.today().isoformat()
     slug = slugify(titolo)
     fname = f"{d}-{slug}.md"
     fpath = os.path.join(REPO, "_posts", fname)
+    _check_no_duplicate(fpath)
 
     fm = (
         "---\n"
@@ -64,19 +165,27 @@ def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None):
         f.write(fm + corpo.strip() + "\n")
 
     _git_push(f"Nuovo articolo: {titolo}")
-    url = f"https://cialdecompatibili-netizen.github.io/cmspush2/{categoria}/{slug}/"
+    url = f"{SITE_BASE}/{categoria}/{slug}/"
+    _log("articolo", titolo, slug, url, fname)
     print(f"OK ARTICOLO -> {fname}")
     print(f"URL -> {url}")
+    if verifica:
+        verifica_live(url)
     return fname
 
 
 def pubblica_prodotto(nome, prezzo, categoria, sku, descrizione, corpo,
                        image=None, stock=20, badge=None, price_original=None,
-                       colors=None, sizes=None, shipping=None):
-    """Crea _products/slug.md con front-matter pulito, fa commit+push."""
+                       colors=None, sizes=None, shipping=None, verifica=True):
+    """Crea _products/slug.md con front-matter pulito, fa commit+push.
+    Valida categoria, caratteri YAML, duplicati. Verifica live (200) dopo il push se verifica=True."""
+    _check_yaml_safe(nome, categoria, sku, descrizione, badge, colors, sizes, shipping)
+    _check_categoria_prodotto(categoria)
+
     slug = slugify(nome)
     fname = f"{slug}.md"
     fpath = os.path.join(REPO, "_products", fname)
+    _check_no_duplicate(fpath)
 
     lines = [
         "---",
@@ -107,9 +216,12 @@ def pubblica_prodotto(nome, prezzo, categoria, sku, descrizione, corpo,
         f.write(fm + corpo.strip() + "\n")
 
     _git_push(f"Nuovo prodotto: {nome}")
-    url = f"https://cialdecompatibili-netizen.github.io/cmspush2/shop/{slug}/"
+    url = f"{SITE_BASE}/shop/{slug}/"
+    _log("prodotto", nome, slug, url, fname)
     print(f"OK PRODOTTO -> {fname}")
     print(f"URL -> {url}")
+    if verifica:
+        verifica_live(url)
     return fname
 
 
