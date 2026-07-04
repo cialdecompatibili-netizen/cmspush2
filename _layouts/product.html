@@ -271,4 +271,10 @@ function switchTab(id, el) {
   document.getElementById('tab-'+id).classList.add('active');
   el.classList.add('active');
 }
+// Fix bfcache: se la pagina viene ripristinata dalla cache back/forward del browser
+// (es. utente naviga con "Indietro"), gli script non vengono rieseguiti e SLUG/TITLE
+// resterebbero quelli della visita precedente. Forziamo un reload pulito in quel caso.
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) { window.location.reload(); }
+});
 </script>
