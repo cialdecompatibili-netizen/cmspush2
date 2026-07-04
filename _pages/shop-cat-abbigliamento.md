@@ -37,7 +37,7 @@ shop_category_name: Abbigliamento
         {% if p.description %}<div class="desc">{{ p.description | truncate: 120 }}</div>{% endif %}
         <div class="price">€ {{ p.price | default: "—" }}</div>
       </div>
-      <button class="btn-cart" onclick="aggiungiCarrello('{{ p.name | remove: '.md' }}','{{ p.title | replace: "'", "\'" }}',{{ p.price | default: 0 }})">🛒 Aggiungi</button>
+      <button class="btn-cart" onclick="aggiungiCarrello('{{ p.path | split: '/' | last | remove: '.md' }}','{{ p.title | replace: "'", "\'" }}',{{ p.price | default: 0 }})">🛒 Aggiungi</button>
     </div>
     {% endfor %}
   {% endif %}
