@@ -37,19 +37,19 @@ shop_category_name: Abbigliamento
         {% if p.description %}<div class="desc">{{ p.description | truncate: 120 }}</div>{% endif %}
         <div class="price">€ {{ p.price | default: "—" }}</div>
       </div>
-      <button class="btn-cart" onclick="aggiungiCarrello('{{ p.path | split: '/' | last | remove: '.md' }}','{{ p.title | replace: "'", "\'" }}',{{ p.price | default: 0 }})">🛒 Aggiungi</button>
+      <button class="btn-cart" onclick="aggiungiCarrello('{{ p.path | split: '/' | last | remove: '.md' }}','{{ p.title | replace: "'", "\'" }}',{{ p.price | default: 0 }},'{{ p.image | split: "|||" | first }}')">🛒 Aggiungi</button>
     </div>
     {% endfor %}
   {% endif %}
 </div>
 
 <script>
-function aggiungiCarrello(slug, title, price) {
+function aggiungiCarrello(slug, title, price, image) {
   const CART_KEY = (window.SITE_BASE || 'default') + '_cart';
   let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || '[]');
   const idx = cart.findIndex(i => i.slug === slug);
   if (idx >= 0) cart[idx].qty++;
-  else cart.push({slug, title, price, qty: 1});
+  else cart.push({slug, title, price, image, qty: 1});
   sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
   const tot = cart.reduce((s,i) => s + i.qty, 0);
   alert(`✅ "${title}" aggiunto al carrello (tot. ${tot} articoli)`);
