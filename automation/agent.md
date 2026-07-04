@@ -124,6 +124,39 @@ Se una `PublishError` viene sollevata, Claude legge il messaggio (contiene gia' 
 
 ---
 
+## ⚠️ BUG CRITICO RISOLTO (2026-07-04) — carrello mescolava prodotti diversi
+
+**Sintomo**: aggiungendo 2 prodotti diversi al carrello (es. Camicia + Mazzo di Carte), il carrello mostrava **1 solo prodotto con quantità 2** invece di 2 righe distinte. Anche l'immagine prodotto nel carrello appariva come 📦 invece della foto vera.
+
+**Causa radice**: in Liquid/Jekyll, `page.name` (o `p.name` su un item di collection) **NON è il filename** — è quasi sempre vuoto o non affidabile per generare uno slug. Il pattern sbagliato era:
+```liquid
+{{ p.name | remove: '.md' }}
+```
+Con `p.name` vuoto, TUTTI i prodotti finivano con lo stesso "slug" (stringa vuota), quindi la logica del carrello (`cart.find(i => i.slug === item.slug)`) li trattava come lo stesso prodotto e sommava le quantità invece di creare righe separate.
+
+**Fix corretto — usare SEMPRE**:
+```liquid
+{{ p.path | split: '/' | last | remove: '.md' }}
+```
+`page.path` è il path reale del file sorgente (es. `_products/mazzo-di-carte-magiche-pro.md`), affidabile al 100%.
+
+**File coinvolti e già corretti** (controllare qui per primi se il bug si ripresenta):
+1. `_layouts\product.html` — riga `const SLUG = ...` nello script della pagina prodotto singola
+2. `_pages\shop-cat-abbigliamento.md` — funzione `aggiungiCarrello()`, generata dal bottone "Aggiungi" nella card prodotto della pagina categoria. Aveva anche un secondo bug: non passava il parametro `image` alla funzione, quindi il carrello non aveva mai la foto per i prodotti aggiunti da questa pagina (fix: aggiunto 4° parametro `image` sia nel chiamante Liquid che nella funzione JS).
+
+**REGOLA PERMANENTE — controllare SEMPRE prima di pubblicare nuove feature carrello/shop**:
+- Cercare in tutto il progetto `p.name` o `page.name` usati per generare slug/id di prodotti → vanno SEMPRE sostituiti con `p.path | split: '/' | last | remove: '.md'`
+- Comando di verifica rapido:
+  ```powershell
+  Get-ChildItem "_layouts","_pages","_includes" -Recurse -Filter "*.html" | Select-String -Pattern "p\.name|page\.name"
+  Get-ChildItem "_layouts","_pages","_includes" -Recurse -Filter "*.md" | Select-String -Pattern "p\.name|page\.name"
+  ```
+  Se compare qualcosa → è un bug, va corretto subito con `p.path | split: '/' | last | remove: '.md'`
+- Se in futuro si aggiungono altre pagine categoria (`_pages/shop-cat-*.md`), copiare la logica CORRETTA da `shop-cat-abbigliamento.md` aggiornata, non da versioni vecchie/cache.
+- Ogni volta che si tocca il flusso "Aggiungi al carrello" (in qualsiasi file), verificare che la chiamata passi TUTTI e 4 i campi: `slug` (via `p.path`), `title`, `price`, `image` — un campo mancante rompe silenziosamente la visualizzazione nel carrello senza errori JS visibili.
+
+---
+
 ## Ripresa sessione — sequenza boot per lavorare qui
 
 1. Leggi questo file (`automation\agent.md`)
