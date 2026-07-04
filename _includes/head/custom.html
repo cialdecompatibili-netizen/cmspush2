@@ -130,14 +130,22 @@ body { font-size: calc(1rem * var(--t-font-scale)); }
   width: 100%;
   height: auto;
   border-radius: var(--t-radius, 10px);
-  margin: 10px 0 18px 0;
   box-shadow: 0 2px 10px rgba(0,0,0,.10);
+  float: right;
+  margin: 4px 0 12px 20px;
 }
-.article-inline-meta-img + .article-inline-caption {
+.article-inline-caption {
   display: block;
   font-size: 12px;
   color: #999;
-  margin: -12px 0 18px 0;
+  text-align: center;
+  margin-top: 6px;
+  float: right;
+  max-width: 260px;
+  clear: right;
+}
+@media (max-width: 600px) {
+  .article-inline-meta-img, .article-inline-caption { float: none; max-width: 100%; margin: 12px 0; }
 }
 .page__meta-category a {
   color: var(--t-accent) !important;
@@ -145,6 +153,37 @@ body { font-size: calc(1rem * var(--t-font-scale)); }
   font-weight: 600;
 }
 .page__meta-category a:hover { text-decoration: underline; }
+
+/* INDICE AUTOMATICO (stile Wikipedia, generato dagli h2 dell'articolo) */
+.article-auto-toc {
+  background: #f8f8fb;
+  border: 1px solid #e8e8ee;
+  border-radius: var(--t-radius, 10px);
+  padding: 16px 22px;
+  margin: 18px 0 26px 0;
+  display: inline-block;
+  max-width: 100%;
+}
+.article-auto-toc__title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--t-text, #333);
+}
+.article-auto-toc ol {
+  margin: 0;
+  padding-left: 20px;
+  counter-reset: toc-counter;
+}
+.article-auto-toc li {
+  margin: 4px 0;
+  font-size: 14px;
+}
+.article-auto-toc a {
+  color: var(--t-link, #6c63ff) !important;
+  text-decoration: none;
+}
+.article-auto-toc a:hover { text-decoration: underline; }
 </style>
 
 {% if site.integrations.ga4.enabled and site.integrations.ga4.id != "" %}
@@ -249,11 +288,11 @@ document.addEventListener('DOMContentLoaded', function(){
   window.addEventListener('scroll', toggleBackToTop);
   toggleBackToTop();
 
-  // --- IMMAGINE ARTICOLO dentro il box, accanto a "readtime" + categoria cliccabile (fix 2026-07-04) ---
+  // --- IMMAGINE ARTICOLO: float a destra sul primo paragrafo, stile Wikipedia (fix 2026-07-04) ---
   (function(){
     var hero = document.querySelector('.page__hero');
-    var meta = document.querySelector('.page__meta');
-    if (!hero || !meta) return; // pagina senza immagine o senza meta, niente da fare
+    var content = document.querySelector('.page__content');
+    if (!hero || !content) return; // pagina senza immagine o senza contenuto, niente da fare
 
     var img = hero.querySelector('.page__hero-image');
     var caption = hero.querySelector('.page__hero-caption');
@@ -273,8 +312,13 @@ document.addEventListener('DOMContentLoaded', function(){
       wrap.appendChild(cap);
     }
 
-    // Inserisce il blocco immagine SUBITO DOPO il box meta (readtime/categoria), dentro l'header
-    meta.parentNode.insertBefore(wrap, meta.nextSibling);
+    // Inserisce l'immagine (con float:right via CSS) subito prima del primo paragrafo del contenuto
+    var firstP = content.querySelector('p, h2');
+    if (firstP) {
+      content.insertBefore(wrap, firstP);
+    } else {
+      content.insertBefore(wrap, content.firstChild);
+    }
   })();
 
   // --- CATEGORIA cliccabile accanto a "readtime" nel box meta ---
@@ -287,6 +331,42 @@ document.addEventListener('DOMContentLoaded', function(){
     span.className = 'page__meta-category';
     span.innerHTML = ' · <a href="' + catLink.getAttribute('href') + '">' + catLink.textContent.trim() + '</a>';
     meta.appendChild(span);
+  })();
+
+  // --- INDICE AUTOMATICO generato dagli h2 dell'articolo, stile Wikipedia (2026-07-04) ---
+  (function(){
+    var content = document.querySelector('.page__content');
+    if (!content) return;
+    var headings = content.querySelectorAll('h2');
+    if (headings.length < 2) return; // sotto le 2 sezioni un indice non serve
+
+    var toc = document.createElement('div');
+    toc.className = 'article-auto-toc';
+    var title = document.createElement('div');
+    title.className = 'article-auto-toc__title';
+    title.textContent = 'Indice';
+    toc.appendChild(title);
+
+    var ol = document.createElement('ol');
+    headings.forEach(function(h, i){
+      if (!h.id) {
+        h.id = 'sez-' + (i + 1) + '-' + h.textContent.trim().toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .substring(0, 50);
+      }
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent.trim();
+      li.appendChild(a);
+      ol.appendChild(li);
+    });
+    toc.appendChild(ol);
+
+    // Inserisce l'indice subito dopo il primo h2 (cosi' il paragrafo introduttivo resta sopra, come Wikipedia)
+    var firstH2 = headings[0];
+    firstH2.parentNode.insertBefore(toc, firstH2);
   })();
 
   // --- DROPDOWN SHOP (generato da _data/shop_nav.yml via Liquid) ---
