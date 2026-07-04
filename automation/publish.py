@@ -64,7 +64,9 @@ def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None):
         f.write(fm + corpo.strip() + "\n")
 
     _git_push(f"Nuovo articolo: {titolo}")
+    url = f"https://cialdecompatibili-netizen.github.io/cmspush2/{categoria}/{slug}/"
     print(f"OK ARTICOLO -> {fname}")
+    print(f"URL -> {url}")
     return fname
 
 
@@ -105,7 +107,9 @@ def pubblica_prodotto(nome, prezzo, categoria, sku, descrizione, corpo,
         f.write(fm + corpo.strip() + "\n")
 
     _git_push(f"Nuovo prodotto: {nome}")
+    url = f"https://cialdecompatibili-netizen.github.io/cmspush2/shop/{slug}/"
     print(f"OK PRODOTTO -> {fname}")
+    print(f"URL -> {url}")
     return fname
 
 

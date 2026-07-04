@@ -39,6 +39,13 @@ pubblica_articolo(
 ```
 Genera `_posts\YYYY-MM-DD-slug-titolo.md` con front-matter pulito (layout: single, title, date, excerpt, categories), fa commit+push automatico.
 
+⚠️ **URL pubblico articolo** — questo sito ha `permalink: /:categories/:title/` in `_config.yml` (NON lo schema Jekyll di default `/YYYY/MM/DD/title.html`). L'URL corretto e' sempre:
+```
+https://cialdecompatibili-netizen.github.io/cmspush2/{categoria}/{slug-titolo}/
+```
+Esempio: categoria "tecnica", titolo "Enrico Fermi..." -> `https://cialdecompatibili-netizen.github.io/cmspush2/tecnica/enrico-fermi-il-fisico-che-divise-l-atomo-e-la-storia/`
+NON usare mai lo schema data (`/2026/07/04/...html`) per questo progetto — da 404. Verificare sempre `_config.yml` (chiave `permalink`) prima di comunicare un link a Mirco.
+
 ### Per un PRODOTTO
 ```python
 import sys
