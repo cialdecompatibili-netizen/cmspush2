@@ -208,7 +208,7 @@ layout: single
 <div id="sp-toast" class="sp-toast"></div>
 
 <script>
-const SLUG = "{{ p.name | remove: '.md' }}";
+const SLUG = "{{ p.path | split: '/' | last | remove: '.md' }}";
 const TITLE = "{{ p.title | replace: '"', '\"' }}";
 const PRICE = {{ p.price | default: 0 }};
 const IMG = "{% if gallery_imgs.size > 0 %}{{ gallery_imgs[0] | strip }}{% endif %}";
