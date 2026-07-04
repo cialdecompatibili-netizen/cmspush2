@@ -6,8 +6,8 @@ excerpt: "La storia di Ada Lovelace, la prima programmatrice della storia: un al
 categories:
   - tecnica
 header:
-  image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ada_Lovelace.jpg/600px-Ada_Lovelace.jpg"
-  teaser: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ada_Lovelace.jpg/600px-Ada_Lovelace.jpg"
+  image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ada_Lovelace.jpg/960px-Ada_Lovelace.jpg"
+  teaser: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ada_Lovelace.jpg/960px-Ada_Lovelace.jpg"
   caption: "Ritratto di Ada Lovelace, Margaret Sarah Carpenter, 1836"
 ---
 
