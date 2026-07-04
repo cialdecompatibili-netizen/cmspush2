@@ -101,6 +101,40 @@ def _log(kind, titolo, slug, url, fname):
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def _scarica_immagine_locale(url, sottocartella, slug):
+    """Scarica un'immagine da URL esterno e la salva dentro il repo (assets/images/{sottocartella}/),
+    cosi' non dipende piu' da un servizio esterno (Wikimedia, hotlink, rate-limit, URL che cambia, ecc.).
+    Ritorna il path relativo Jekyll da usare nel front-matter (es. /assets/images/posts/slug.jpg),
+    o solleva PublishError se il download fallisce (status non 200, o content-type non e' un'immagine)."""
+    ext = os.path.splitext(url.split("?")[0])[1].lower()
+    if ext not in (".jpg", ".jpeg", ".png", ".webp", ".gif"):
+        ext = ".jpg"  # fallback ragionevole
+    fname = f"{slug}{ext}"
+    dir_path = os.path.join(REPO, "assets", "images", sottocartella)
+    os.makedirs(dir_path, exist_ok=True)
+    fpath = os.path.join(dir_path, fname)
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            if resp.status != 200:
+                raise PublishError(f"Download immagine fallito: HTTP {resp.status} da {url}")
+            content_type = resp.headers.get("Content-Type", "")
+            if not content_type.startswith("image/"):
+                raise PublishError(f"URL immagine non restituisce un'immagine (Content-Type: {content_type}) -> {url}")
+            data = resp.read()
+    except urllib.error.HTTPError as e:
+        raise PublishError(f"Download immagine fallito: HTTP {e.code} da {url}")
+    except urllib.error.URLError as e:
+        raise PublishError(f"Download immagine fallito: {e.reason} da {url}")
+
+    with open(fpath, "wb") as f:
+        f.write(data)
+
+    print(f"Immagine scaricata e salvata nel repo: assets/images/{sottocartella}/{fname} ({len(data)} bytes)")
+    return f"{SITE_BASE}/assets/images/{sottocartella}/{fname}"
+
+
 def _git_push(msg):
     subprocess.run(["git", "add", "."], cwd=REPO, check=True)
     r = subprocess.run(["git", "commit", "-m", msg], cwd=REPO, capture_output=True, text=True)
@@ -153,6 +187,9 @@ def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None, verifica=Tru
     fpath = os.path.join(REPO, "_posts", fname)
     _check_no_duplicate(fpath)
 
+    if image and image.startswith("http"):
+        image = _scarica_immagine_locale(image, "posts", slug)
+
     fm = (
         "---\n"
         "layout: single\n"
@@ -194,6 +231,9 @@ def pubblica_prodotto(nome, prezzo, categoria, sku, descrizione, corpo,
     fname = f"{slug}.md"
     fpath = os.path.join(REPO, "_products", fname)
     _check_no_duplicate(fpath)
+
+    if image and image.startswith("http"):
+        image = _scarica_immagine_locale(image, "products", slug)
 
     lines = [
         "---",

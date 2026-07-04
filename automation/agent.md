@@ -78,6 +78,18 @@ Genera `_products\slug-nome.md` con front-matter completo (compatibile con `_lay
 
 ---
 
+## 🖼️ Immagini — SEMPRE scaricate e servite dal repo (aggiunto 2026-07-04)
+
+Quando si passa `image=URL` a `pubblica_articolo` o `pubblica_prodotto`, il motore ora **scarica l'immagine in automatico** e la salva dentro il repo (`assets/images/posts/{slug}.ext` o `assets/images/products/{slug}.ext`), poi usa quel path locale nel front-matter invece dell'URL esterno.
+
+**Perche'**: un URL esterno (Wikimedia, CDN di terzi, ecc.) puo' rompersi in qualsiasi momento — rate limit, hotlink protection, URL che cambia, file rinominato/cancellato. Un'immagine dentro il repo e' definitiva, non dipende da nessun servizio esterno, e viene servita da GitHub Pages come tutto il resto del sito.
+
+Se il download fallisce (HTTP diverso da 200, o il Content-Type non e' un'immagine), la funzione solleva `PublishError` PRIMA di scrivere qualsiasi file — mai un link rotto silenzioso.
+
+**Bug corretto lo stesso giorno**: il primo articolo con immagine (Ada Lovelace) e' stato pubblicato con un URL Wikimedia thumbnail costruito a mano (hash di directory indovinato, es. `/e/e0/`) — sbagliato, dava 400. L'hash di directory Wikimedia NON si puo' indovinare dal nome file: va sempre preso dalla vera pagina del file o dalla API (`action=query&prop=imageinfo`), mai costruito a mano. Ora comunque il problema e' risolto alla radice: l'immagine viene scaricata una sola volta e salvata nel repo, quindi anche se l'URL sorgente era quello giusto, da quel momento in poi il sito non dipende piu' da Wikimedia.
+
+---
+
 ## 🔒 Protezioni automatiche del motore (stabilizzato 2026-07-04)
 
 `publish.py` ora valida TUTTO da solo prima di scrivere o pushare qualsiasi file — Claude non deve piu controllare queste cose a mano:

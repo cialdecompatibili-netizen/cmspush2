@@ -6,8 +6,8 @@ excerpt: "La storia di Ada Lovelace, la prima programmatrice della storia: un al
 categories:
   - tecnica
 header:
-  image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ada_Lovelace.jpg/960px-Ada_Lovelace.jpg"
-  teaser: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ada_Lovelace.jpg/960px-Ada_Lovelace.jpg"
+  image: "https://cialdecompatibili-netizen.github.io/cmspush2/assets/images/posts/ada-lovelace-la-donna-che-immagino-il-computer-un-secolo-prima.jpg"
+  teaser: "https://cialdecompatibili-netizen.github.io/cmspush2/assets/images/posts/ada-lovelace-la-donna-che-immagino-il-computer-un-secolo-prima.jpg"
   caption: "Ritratto di Ada Lovelace, Margaret Sarah Carpenter, 1836"
 ---
 
