@@ -197,7 +197,8 @@ function checkout() {
 // Aggiungi prodotto al carrello (chiamato dalla pagina prodotto)
 window.addToCartGlobal = function(item) {
   const cart = getCart();
-  const existing = cart.find(i => i.slug === item.slug && i.color === item.color && i.size === item.size);
+  const itemKey = item.slug || item.title;
+  const existing = cart.find(i => (i.slug || i.title) === itemKey && i.color === item.color && i.size === item.size);
   if (existing) { existing.qty = (existing.qty||1) + (item.qty||1); }
   else { cart.push({ ...item, qty: item.qty||1 }); }
   saveCart(cart);
