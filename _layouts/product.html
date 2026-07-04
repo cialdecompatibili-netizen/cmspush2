@@ -98,7 +98,7 @@ layout: single
 <div class="sp-wrap">
   <div class="sp-gallery">
     {% if gallery_imgs.size > 0 %}
-      <img id="sp-main-img" class="sp-main-img" src="{{ gallery_imgs[0] | strip }}" alt="{{ p.title }}">
+      <img id="sp-main-img" class="sp-main-img" src="{{ gallery_imgs[0] | strip }}" alt="{{ p.title }}" onclick="openLightbox(this.src, this.alt)">
       {% if gallery_imgs.size > 1 %}
       <div class="sp-thumbs">
         {% for img in gallery_imgs %}
