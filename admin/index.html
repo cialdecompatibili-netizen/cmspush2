@@ -662,6 +662,32 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════════════════
+// INDICE DEL FILE — numeri di riga indicativi, cercare con Ctrl+F il testo
+// tra parentesi se il file e' stato modificato e i numeri sono slittati.
+// ═══════════════════════════════════════════════════════════════════════
+// ~664  detectRepo()            — rileva REPO da URL, MAI hardcodare (funziona su repo clienti)
+// ~767  startDeployPolling()    — barra progresso + polling reale GitHub Actions dopo ogni salvataggio
+// ~840  tok()/enc()/dec()       — token localStorage + base64 UTF-8 safe (MAI btoa/atob diretti)
+// ~844  ghGet()/ghPut()         — helper GitHub API contenuti (sha obbligatorio per update, mai '')
+// ~886  SELETTORE IMMAGINI      — apriSelettoreImmagini(), galleria+upload+elimina, riutilizzabile
+// ~977  caricaCategorie()       — legge _data/categorie.json (articoli)
+// ~1343 ARTICOLI                — pubblicaArticolo(), editor visuale/HTML, TOC, teaser image
+// ~1806 SHOP CATEGORIE          — _data/shop-categorie.json, aggiungiCatShop()/eliminaCatShop()
+// ~1873 SHOP PRODOTTI           — nuovoProdotto(), caricaProdotti(), lista con modifica/elimina
+// ~1934 pubblicaProdotto()      — salva _products/*.md, campo tipo fisico/digitale nel frontmatter
+// ~1991 caricaIntegrazioni()    — tab Integrazioni (GA4, Search Console, ecc.)
+//
+// ⚠️ PUNTI CRITICI DA NON ROMPERE (dettagli nel commento sopra ogni funzione):
+// - detectRepo(): zero hardcode, deve restare dinamico o si rompe per ogni cliente
+// - enc()/dec(): usare SEMPRE queste, mai btoa/atob diretti — crashano su àèìòù ed emoji
+// - ghPut(): sha=undefined per file nuovi, sha reale per update — mai stringa vuota
+// - p.path vs p.name in Liquid (vedi ..\.claude.md sezione bug carrello): usare SEMPRE
+//   {{ p.path | split: '/' | last | remove: '.md' }} per generare slug prodotto, mai p.name
+// - Editor pagine: setPagCorpo() NON deve mai scrivere in pag-vis-editor (corrompe MD→HTML)
+// - Prima di pushare: verificare sempre JS con `node -e` (vedi ..\.claude.md, sezione push)
+// ═══════════════════════════════════════════════════════════════════════
+
 // Rileva REPO dinamicamente dall'URL della pagina (funziona su qualsiasi repo cliente)
 // URL formato: https://USERNAME.github.io/REPO/admin/ oppure https://USERNAME.github.io/admin/
 // ⚠️ CRITICO: non toccare detectRepo() — funziona su qualsiasi repo cliente.
