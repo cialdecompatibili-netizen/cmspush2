@@ -435,6 +435,15 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         </div>
       </div>
 
+      <div class="card">
+        <div class="card-title">Visualizzazione liste</div>
+        <div class="field">
+          <label>Prodotti per pagina <span style="font-weight:400;color:#bbb">(lista nella tab Prodotti)</span></label>
+          <input type="number" id="cfg-limite-prodotti" min="1" placeholder="50" onchange="setLimiteProdotti(this.value)">
+          <div class="hint">Quante righe mostrare prima di far comparire le frecce ← Precedente / Successiva →. Salvato solo su questo browser (non sincronizzato tra dispositivi).</div>
+        </div>
+      </div>
+
       <div class="btn-group">
         <button class="btn btn-primary" onclick="salvaImpostazioni()">💾 Salva impostazioni</button>
       </div>
@@ -586,8 +595,20 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
     <!-- PRODOTTI -->
     <div class="page" id="page-prodotti">
       <div class="page-title">🛒 Prodotti</div>
+      <!-- VISTA LISTA -->
+      <div id="prod-lista-view">
+        <div style="margin-bottom:16px"><button class="btn btn-primary" onclick="apriNuovoProdotto()">✚ Nuovo prodotto</button></div>
+        <div class="card">
+          <div class="card-title" style="display:flex;justify-content:space-between">Prodotti pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaProdotti()">↻ Aggiorna</button></div>
+          <div id="lista-prodotti"><em style="color:#bbb;font-size:13px">Caricamento...</em></div>
+          <div id="prod-paginazione" style="display:flex;justify-content:center;align-items:center;gap:1em;margin-top:1em"></div>
+        </div>
+      </div>
+      <!-- VISTA EDITOR -->
+      <div id="prod-editor-view" style="display:none">
+        <div style="margin-bottom:16px"><button class="btn btn-secondary" onclick="tornaListaProdotti()">← Torna ai prodotti</button></div>
       <div class="card">
-        <div class="card-title">Nuovo / Modifica prodotto</div>
+        <div class="card-title" id="prod-editor-title">Nuovo prodotto</div>
         <div class="field"><label>Titolo *</label><input type="text" id="prod-titolo" placeholder="Nome del prodotto"></div>
         <div class="grid2">
           <div class="field"><label>Prezzo (€) *</label><input type="text" id="prod-prezzo" placeholder="19.90"></div>
@@ -608,13 +629,9 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <div class="field"><label>Descrizione completa</label><textarea class="sm" id="prod-corpo" placeholder="Descrizione lunga del prodotto..."></textarea></div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="pubblicaProdotto()">🚀 Salva prodotto</button>
-          <button class="btn btn-secondary" onclick="nuovoProdotto()">✚ Nuovo</button>
         </div>
         <div class="msg" id="msg-prod"></div>
       </div>
-      <div class="card">
-        <div class="card-title">Prodotti pubblicati</div>
-        <div id="lista-prodotti"><em style="color:#bbb;font-size:13px">Caricamento...</em></div>
       </div>
     </div>
 
@@ -1643,6 +1660,7 @@ async function caricaImpostazioni(){
   document.getElementById('cfg-author-name').value=get('  name','');
   document.getElementById('cfg-bio').value=get('  bio','');
   document.getElementById('cfg-avatar').value=get('  avatar','');
+  document.getElementById('cfg-limite-prodotti').value=getLimiteProdotti();
   // social — cerca gli url dopo i label
   const socialMatch=(label)=>{const m=y.match(new RegExp(`label: "${label}"[\\s\\S]*?url: "?([^"\\n]+)"?`));return m?m[1].trim():'';}
   document.getElementById('cfg-website').value=socialMatch('Website');
@@ -1907,6 +1925,35 @@ function nuovoProdotto(){
   showMsg('msg-prod','','');
 }
 
+// Apre la vista editor per un NUOVO prodotto (bottone "✚ Nuovo prodotto" nella lista) — stessa
+// logica di apriNuovoArticolo(): resetta i campi, nasconde la lista, mostra il form vuoto.
+function apriNuovoProdotto(){
+  nuovoProdotto();
+  document.getElementById('prod-editor-title').textContent='Nuovo prodotto';
+  document.getElementById('prod-lista-view').style.display='none';
+  document.getElementById('prod-editor-view').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Torna alla lista prodotti (bottone "← Torna ai prodotti" nell'editor) — ricarica la lista
+// cosi' eventuali modifiche appena salvate sono subito visibili.
+function tornaListaProdotti(){
+  document.getElementById('prod-editor-view').style.display='none';
+  document.getElementById('prod-lista-view').style.display='block';
+  caricaProdotti();
+}
+
+// ── Paginazione lista prodotti ──────────────────────────────────────────
+// Limite configurabile dalla tab Impostazioni (default 50), salvato in localStorage.
+// getLimiteProdotti()/setLimiteProdotti() sono usate anche dal campo in Impostazioni.
+function getLimiteProdotti(){
+  return parseInt(localStorage.getItem('cms_limite_prodotti'))||50;
+}
+function setLimiteProdotti(n){
+  localStorage.setItem('cms_limite_prodotti', Math.max(1, parseInt(n)||50));
+}
+let _prodPaginaCorrente=1;
+
 async function caricaProdotti(){
   const el=document.getElementById('lista-prodotti');
   if(!tok()){el.innerHTML='<em style="color:#bbb;font-size:13px">Token mancante.</em>';return;}
@@ -1920,11 +1967,22 @@ async function caricaProdotti(){
   localStorage.setItem('cms_cache_prodotti',JSON.stringify(files));
   _renderListaProdotti(files);
 }
+// Renderizza la lista prodotti CON paginazione. Il limite per pagina viene da getLimiteProdotti()
+// (modificabile in Impostazioni). _prodPaginaCorrente tiene lo stato tra un render e l'altro —
+// vaiAPaginaProdotti(n) lo aggiorna e richiama questa funzione.
 function _renderListaProdotti(files){
   const el=document.getElementById('lista-prodotti');
+  const pagEl=document.getElementById('prod-paginazione');
   const prods=files.filter(f=>f.name.endsWith('.md'));
-  if(!prods.length){el.innerHTML='<em style="color:#bbb;font-size:13px">Nessun prodotto ancora.</em>';return;}
-  el.innerHTML=prods.map(f=>`
+  if(!prods.length){el.innerHTML='<em style="color:#bbb;font-size:13px">Nessun prodotto ancora.</em>';pagEl.innerHTML='';return;}
+
+  const limite=getLimiteProdotti();
+  const totalePagine=Math.max(1, Math.ceil(prods.length/limite));
+  if(_prodPaginaCorrente>totalePagine)_prodPaginaCorrente=totalePagine;
+  const start=(_prodPaginaCorrente-1)*limite;
+  const paginaProds=prods.slice(start, start+limite);
+
+  el.innerHTML=paginaProds.map(f=>`
     <div class="list-row">
       <span style="font-size:13px">🛒 ${f.name.replace('.md','')}</span>
       <div style="display:flex;gap:8px">
@@ -1932,6 +1990,20 @@ function _renderListaProdotti(files){
         <button class="btn btn-danger btn-sm" onclick="eliminaProdotto('${f.path}','${f.sha}')">🗑</button>
       </div>
     </div>`).join('');
+
+  // Frecce paginazione — mostrate solo se ci sono piu' pagine di quante ne servono per 1 sola vista
+  if(totalePagine<=1){pagEl.innerHTML='';return;}
+  pagEl.innerHTML=`
+    <button class="btn btn-secondary btn-sm" ${_prodPaginaCorrente<=1?'disabled':''} onclick="vaiAPaginaProdotti(${_prodPaginaCorrente-1})">← Precedente</button>
+    <span style="font-size:13px;color:#888">Pagina ${_prodPaginaCorrente} di ${totalePagine} (${prods.length} prodotti totali, ${limite}/pagina)</span>
+    <button class="btn btn-secondary btn-sm" ${_prodPaginaCorrente>=totalePagine?'disabled':''} onclick="vaiAPaginaProdotti(${_prodPaginaCorrente+1})">Successiva →</button>
+  `;
+}
+
+function vaiAPaginaProdotti(n){
+  _prodPaginaCorrente=n;
+  const cached=JSON.parse(localStorage.getItem('cms_cache_prodotti')||'null');
+  if(cached)_renderListaProdotti(cached);
 }
 
 async function modificaProdotto(path){
@@ -1955,6 +2027,11 @@ async function modificaProdotto(path){
   document.getElementById('prod-corpo').value=fm[2].trim();
   _prodPath=path;
   showMsg('msg-prod','','');
+  // Switch view: nasconde la lista, mostra l'editor gia' precompilato (stile WordPress)
+  document.getElementById('prod-editor-title').textContent='Modifica prodotto';
+  document.getElementById('prod-lista-view').style.display='none';
+  document.getElementById('prod-editor-view').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 async function pubblicaProdotto(){
