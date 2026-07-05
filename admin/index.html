@@ -922,6 +922,7 @@ async function caricaImmagineGalleria(inputEl){
       if(res.ok){
         msgEl.textContent='✅ Caricata!';
         inputEl.value='';
+        startDeployPolling();
         setTimeout(()=>caricaGalleriaImmagini(),1200);
       }else{
         const j=await res.json();
@@ -940,7 +941,7 @@ async function eliminaImmagineGalleria(path, sha, nome){
     method:'DELETE',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
     body:JSON.stringify({message:`Elimina immagine ${path}`,sha})
   });
-  if(res.ok)caricaGalleriaImmagini();
+  if(res.ok){startDeployPolling();caricaGalleriaImmagini();}
   else alert('Errore durante l\'eliminazione.');
 }
 
