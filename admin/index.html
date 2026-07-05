@@ -851,11 +851,37 @@ async function ghPut(path,msg,content,sha){
 }
 
 // ============ SELETTORE IMMAGINI — modulo riutilizzabile ============
-// Uso: apriSelettoreImmagini('id-campo-input', 'products')  oppure 'posts'
-// Al click su un'immagine della galleria, riempie automaticamente il campo input indicato con l'URL raw.
-// Estendibile: basta passare una nuova sottocartella (es. 'avatar') per usarlo altrove — crea la cartella al primo upload.
-let _imgPickerTarget=null;
-let _imgPickerFolder=null;
+// COSA FA: bottone 📁 accanto a un campo "Immagine (URL)" → apre un modal con galleria
+// (vedi immagini gia' caricate, upload nuova, elimina) → click su un'immagine riempie
+// automaticamente il campo URL indicato e chiude il modal.
+//
+// COME SI COLLEGA A UN NUOVO CAMPO (1 riga, ovunque nell'HTML):
+//   <button onclick="apriSelettoreImmagini('id-del-tuo-input','nome-cartella')">📁</button>
+// - 'id-del-tuo-input' = id dell'<input type="text"> che deve ricevere l'URL
+// - 'nome-cartella' = sottocartella dentro assets/images/ (es. 'products', 'posts', o una nuova
+//   a scelta come 'avatar' — si crea da sola al primo upload, zero configurazione)
+// Esempi gia' collegati: prod-immagine → 'products' (tab Prodotti), teaser → 'posts' (tab Articoli)
+//
+// COME FUNZIONA INTERNAMENTE:
+// 1. apriSelettoreImmagini salva target+cartella in 2 variabili globali (_imgPickerTarget/_imgPickerFolder)
+//    e chiama caricaGalleriaImmagini() che fa ghGet sulla cartella e mostra le immagini trovate
+// 2. Click su un'immagine → selezionaImmagineGalleria(url) scrive l'url nel campo target e chiude
+// 3. Upload → caricaImmagineGalleria() legge il file con FileReader.readAsDataURL (da' base64 con
+//    prefisso "data:image/...;base64," che va tagliato via .split(',')[1] prima di mandarlo a GitHub),
+//    rinomina il file con timestamp davanti (Date.now()) per evitare collisioni di nome, poi PUT diretto
+//    (non uso ghPut() perche' quella e' per testo/enc(), qui serve base64 binario grezzo)
+// 4. Elimina → DELETE diretto all'API, serve lo sha del file (GitHub lo richiede sempre per cancellare)
+// 5. Ogni upload/cancellazione chiama startDeployPolling() — stessa barra di progresso usata per
+//    salvataggio prodotti/articoli, perche' anche qui serve un vero deploy Jekyll prima che l'immagine
+//    sia visibile sul sito pubblico (non e' istantaneo, vedi nota su startDeployPolling piu' sotto)
+//
+// SE SERVE ESTENDERLO IN FUTURO:
+// - Filtri per tipo file: gia' limitato a jpg/jpeg/png/webp/gif in caricaGalleriaImmagini() (riga con .filter)
+// - Se serve upload multiplo: cambiare input file con "multiple" e ciclare su inputEl.files invece di [0]
+// - Se serve rinominare un'immagine invece di cancellarla: GitHub API non supporta rename diretto,
+//   servirebbe leggere il contenuto, crearne una copia col nuovo nome, poi cancellare la vecchia
+let _imgPickerTarget=null;   // id del campo input che ricevera' l'URL selezionato
+let _imgPickerFolder=null;   // sottocartella dentro assets/images/ (products, posts, ecc.)
 
 function apriSelettoreImmagini(targetInputId, sottocartella){
   _imgPickerTarget=targetInputId;
