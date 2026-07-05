@@ -1,11 +1,11 @@
 ---
-title: "digitale"
-price: 0
+title: "digitalex"
+price: 2
 stock: 
-sku: ""
+sku: "23243"
 category: "abbigliamento"
 tipo: "digitale"
-image: ""
+image: "https://raw.githubusercontent.com/cialdecompatibili-netizen/cmspush2/main/assets/images/products/1783285307493-eva.jpg"
 description: "breve"
 layout: product
 ---
