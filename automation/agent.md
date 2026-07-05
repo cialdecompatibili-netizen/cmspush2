@@ -70,6 +70,37 @@ pubblica_prodotto(
 ```
 Genera `_products\slug-nome.md` con front-matter completo (compatibile con `_layouts\product.html`), fa commit+push automatico.
 
+## 📦 Prodotti fisici vs digitali (aggiunto 2026-07-05)
+
+`pubblica_prodotto()` accetta ora `tipo="fisico"` (default) o `tipo="digitale"`. Scritto nel frontmatter come `tipo: "..."`.
+
+**Logica checkout** (in `_pages/shop-carrello.md`): al momento di "Procedi al checkout" appare un vero form (non piu' un alert placeholder). La regola e':
+- Carrello con **almeno un** prodotto fisico (o misto fisico+digitale) → form completo: email + nome + indirizzo di spedizione (serve per il corriere). **Il fisico vince sempre** se e' misto.
+- Carrello con **tutti** prodotti digitali → form minimo: solo email (nessun indirizzo, nessuna spedizione).
+
+Per pubblicare un prodotto digitale:
+```python
+pubblica_prodotto(
+    nome="Ebook Fotografia",
+    prezzo="9.90",
+    categoria="abbigliamento",
+    sku="EBOOK-001",
+    descrizione="...",
+    corpo="...",
+    tipo="digitale",   # <- questo campo, default e' "fisico" se omesso
+)
+```
+
+**File toccati per questa feature** (controllare qui per primi se serve estenderla):
+- `automation/publish.py` — parametro `tipo`, validato (solo "fisico"/"digitale" ammessi, altrimenti `PublishError`)
+- `_layouts/product.html` — `TIPO` letto da `p.tipo` e passato nell'oggetto `item` quando si aggiunge al carrello dalla pagina prodotto singola
+- `_pages/shop-cat-abbigliamento.md` — stesso campo passato dal bottone "Aggiungi" nella card prodotto della pagina categoria (funzione `aggiungiCarrello()`, 5° parametro)
+- `_pages/shop-carrello.md` — `carrelloRichiedeIndirizzo()` + form checkout dinamico (`checkout()`, `confermaCheckout()`)
+
+⚠️ **Se in futuro si aggiungono altre pagine categoria** (`_pages/shop-cat-*.md`), copiare la logica `tipo` aggiornata da `shop-cat-abbigliamento.md`, non da versioni vecchie/cache — stesso principio gia' documentato per il bug `p.name` vs `p.path` in `..\.claude.md`.
+
+⚠️ Il checkout resta demo (nessun gateway di pagamento reale collegato) — la validazione e la UX sono complete, ma "Conferma ordine" mostra solo un toast di successo. Integrare Stripe/PayPal/altro quando serve procedere con pagamenti veri.
+
 ### Procedura pratica per ogni richiesta
 1. Scrivo uno script minimo `tmp_xxx.py` nella root del progetto con l'import + i dati del contenuto
 2. Lancio con `Windows-MCP:PowerShell`: `cd "C:\Users\mirco\Desktop\cmspush2"; python tmp_xxx.py`
