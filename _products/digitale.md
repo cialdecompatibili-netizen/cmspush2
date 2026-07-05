@@ -1,7 +1,7 @@
 ---
-title: "digitalex"
+title: "digitalex pirelli"
 price: 2
-stock: 
+stock: 3
 sku: "23243"
 category: "abbigliamento"
 tipo: "digitale"
