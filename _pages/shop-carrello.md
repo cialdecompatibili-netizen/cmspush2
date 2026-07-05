@@ -43,6 +43,23 @@ author_profile: false
 .btn-checkout:hover{background:#5a52e0}
 .btn-continue{display:block;text-align:center;margin-top:.8em;font-size:13px;color:#6c63ff;text-decoration:none}
 
+/* Checkout form */
+.checkout-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9998;padding:1em}
+.checkout-box{background:#fff;border-radius:16px;padding:2em;max-width:440px;width:100%;max-height:90vh;overflow-y:auto}
+.checkout-box h3{font-size:1.2em;font-weight:800;margin:0 0 .3em;color:#1a1a2e}
+.checkout-box .sub{font-size:13px;color:#888;margin-bottom:1.2em}
+.checkout-field{margin-bottom:1em}
+.checkout-field label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:.4em;text-transform:uppercase;letter-spacing:.3px}
+.checkout-field input{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;outline:none}
+.checkout-field input:focus{border-color:#6c63ff}
+.checkout-field .err{font-size:11px;color:#e74c3c;margin-top:.3em;display:none}
+.checkout-note{font-size:12px;color:#888;background:#f5f5f8;border-radius:8px;padding:.7em 1em;margin-bottom:1.2em}
+.checkout-actions{display:flex;gap:.7em;margin-top:1.3em}
+.checkout-actions button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+.checkout-actions .btn-annulla{background:#f0f0f0;color:#555}
+.checkout-actions .btn-conferma{background:#6c63ff;color:#fff}
+.checkout-actions .btn-conferma:hover{background:#5a52e0}
+
 /* Badge carrello nel menu */
 .cart-badge-count{background:#e74c3c;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;margin-left:3px;vertical-align:middle}
 
@@ -190,8 +207,81 @@ function applyCoupon() {
     discRow.style.display = 'none';
   }
 }
+// Un carrello richiede l'indirizzo fisico se contiene ALMENO UN prodotto fisico.
+// Se sono tutti digitali, basta l'email. Se e' misto, vince il fisico (serve anche l'indirizzo).
+function carrelloRichiedeIndirizzo() {
+  const cart = getCart();
+  return cart.some(i => (i.tipo || 'fisico') !== 'digitale');
+}
+
 function checkout() {
-  showToast('🎉 Checkout demo — integra il tuo gateway di pagamento!');
+  const richiedeIndirizzo = carrelloRichiedeIndirizzo();
+  const overlay = document.createElement('div');
+  overlay.className = 'checkout-overlay';
+  overlay.id = 'checkout-overlay';
+  overlay.innerHTML = `
+    <div class="checkout-box">
+      <h3>💳 Completa l'ordine</h3>
+      <div class="sub">${richiedeIndirizzo ? 'Ordine con prodotti fisici — serve un indirizzo di spedizione.' : 'Solo prodotti digitali — riceverai tutto via email.'}</div>
+
+      ${!richiedeIndirizzo ? `<div class="checkout-note">📩 Prodotto digitale: nessuna spedizione, riceverai il materiale all'indirizzo email indicato.</div>` : ''}
+
+      <div class="checkout-field">
+        <label>Email</label>
+        <input type="email" id="ck-email" placeholder="nome@esempio.it">
+        <div class="err" id="ck-email-err">Inserisci un'email valida.</div>
+      </div>
+
+      ${richiedeIndirizzo ? `
+      <div class="checkout-field">
+        <label>Nome e cognome</label>
+        <input type="text" id="ck-nome" placeholder="Mario Rossi">
+        <div class="err" id="ck-nome-err">Campo obbligatorio.</div>
+      </div>
+      <div class="checkout-field">
+        <label>Indirizzo di spedizione</label>
+        <input type="text" id="ck-indirizzo" placeholder="Via Roma 1, 00100 Roma (RM)">
+        <div class="err" id="ck-indirizzo-err">Inserisci l'indirizzo completo per il corriere.</div>
+      </div>
+      ` : ''}
+
+      <div class="checkout-actions">
+        <button class="btn-annulla" onclick="chiudiCheckout()">Annulla</button>
+        <button class="btn-conferma" onclick="confermaCheckout(${richiedeIndirizzo})">Conferma ordine</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function chiudiCheckout() {
+  const overlay = document.getElementById('checkout-overlay');
+  if (overlay) overlay.remove();
+}
+
+function confermaCheckout(richiedeIndirizzo) {
+  const email = document.getElementById('ck-email').value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById('ck-email-err').style.display = emailOk ? 'none' : 'block';
+
+  let ok = emailOk;
+
+  if (richiedeIndirizzo) {
+    const nome = document.getElementById('ck-nome').value.trim();
+    const indirizzo = document.getElementById('ck-indirizzo').value.trim();
+    const nomeOk = nome.length > 0;
+    const indirizzoOk = indirizzo.length > 5;
+    document.getElementById('ck-nome-err').style.display = nomeOk ? 'none' : 'block';
+    document.getElementById('ck-indirizzo-err').style.display = indirizzoOk ? 'none' : 'block';
+    ok = ok && nomeOk && indirizzoOk;
+  }
+
+  if (!ok) return;
+
+  chiudiCheckout();
+  showToast(richiedeIndirizzo
+    ? '🎉 Ordine confermato! Spedizione in preparazione — integra qui il tuo gateway di pagamento.'
+    : '🎉 Ordine confermato! Materiale digitale in arrivo via email — integra qui il tuo gateway di pagamento.');
 }
 
 // Aggiungi prodotto al carrello (chiamato dalla pagina prodotto)

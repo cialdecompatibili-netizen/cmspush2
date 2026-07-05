@@ -221,9 +221,14 @@ def pubblica_articolo(titolo, categoria, excerpt, corpo, data=None, verifica=Tru
 
 def pubblica_prodotto(nome, prezzo, categoria, sku, descrizione, corpo,
                        image=None, stock=20, badge=None, price_original=None,
-                       colors=None, sizes=None, shipping=None, verifica=True):
+                       colors=None, sizes=None, shipping=None, verifica=True,
+                       tipo="fisico"):
     """Crea _products/slug.md con front-matter pulito, fa commit+push.
-    Valida categoria, caratteri YAML, duplicati. Verifica live (200) dopo il push se verifica=True."""
+    Valida categoria, caratteri YAML, duplicati. Verifica live (200) dopo il push se verifica=True.
+    tipo: "fisico" (default, richiede indirizzo spedizione al checkout) o "digitale"
+    (richiede solo email al checkout, nessun indirizzo/corriere)."""
+    if tipo not in ("fisico", "digitale"):
+        raise PublishError(f"tipo deve essere 'fisico' o 'digitale', ricevuto: {tipo!r}")
     _check_yaml_safe(nome, categoria, sku, descrizione, badge, colors, sizes, shipping)
     _check_categoria_prodotto(categoria)
 
@@ -245,6 +250,7 @@ def pubblica_prodotto(nome, prezzo, categoria, sku, descrizione, corpo,
     lines.append(f"stock: {stock}")
     lines.append(f'sku: "{sku}"')
     lines.append(f'category: "{categoria}"')
+    lines.append(f'tipo: "{tipo}"')
     if badge:
         lines.append(f'badge: "{badge}"')
     if colors:

@@ -212,6 +212,7 @@ const SLUG = "{{ p.path | split: '/' | last | remove: '.md' }}";
 const TITLE = "{{ p.title | replace: '"', '\"' }}";
 const PRICE = {{ p.price | default: 0 }};
 const IMG = "{% if gallery_imgs.size > 0 %}{{ gallery_imgs[0] | strip }}{% endif %}";
+const TIPO = "{{ p.tipo | default: 'fisico' }}";
 
 function selectOpt(group, el) {
   document.querySelectorAll(`.sp-opt[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
@@ -246,7 +247,7 @@ function addToCart() {
   const sizeEl  = document.querySelector('.sp-opt[data-group="size"].selected');
   const colorEl = document.querySelector('.sp-opt[data-group="color"].selected');
   const qty     = parseInt(document.getElementById('sp-qty')?.value || 1);
-  const item = { slug: SLUG, title: TITLE, price: PRICE, image: IMG, color: colorEl?.textContent || '', size: sizeEl?.textContent || '', qty };
+  const item = { slug: SLUG, title: TITLE, price: PRICE, image: IMG, tipo: TIPO, color: colorEl?.textContent || '', size: sizeEl?.textContent || '', qty };
   const cart = getCart();
   const existing = cart.find(i => i.slug === item.slug && i.color === item.color && i.size === item.size);
   if (existing) { existing.qty = (existing.qty||1) + qty; }
