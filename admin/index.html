@@ -76,7 +76,26 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 .onboarding-input-wrap input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid #e8e8e8;border-radius:9px;font-size:14px;font-family:inherit;background:#fafafa;color:#222}
 .onboarding-input-wrap input:focus{outline:none;border-color:#6c63ff;background:#fff}
 .onboarding-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#aaa}
-.onboarding-link{font-size:12px;color:#6c63ff;text-decoration:none;display:inline-block;margin-bottom:20px}</style>
+.onboarding-link{font-size:12px;color:#6c63ff;text-decoration:none;display:inline-block;margin-bottom:20px}
+
+/* SELETTORE IMMAGINI — modal riutilizzabile */
+.img-picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:99999;padding:1em}
+.img-picker-box{background:#fff;border-radius:16px;padding:1.5em;max-width:640px;width:100%;max-height:85vh;display:flex;flex-direction:column}
+.img-picker-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1em}
+.img-picker-head span{font-size:1.1em;font-weight:800;color:#1a1a2e}
+.img-picker-close{background:#f0f0f0;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:14px;color:#555}
+.img-picker-close:hover{background:#e5e5e5}
+.img-picker-upload{margin-bottom:1em;display:flex;align-items:center;gap:.8em}
+.img-picker-upload-btn{background:#6c63ff;color:#fff;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:inline-block}
+.img-picker-upload-btn:hover{background:#5a52e0}
+.img-picker-upload-msg{font-size:12px;color:#888}
+.img-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.7em;overflow-y:auto;flex:1;padding:.2em}
+.img-picker-item{position:relative;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;aspect-ratio:1;background:#f5f5f5}
+.img-picker-item:hover{border-color:#6c63ff}
+.img-picker-item img{width:100%;height:100%;object-fit:cover;display:block}
+.img-picker-item .img-picker-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:6px;width:22px;height:22px;font-size:12px;cursor:pointer;line-height:1}
+.img-picker-item .img-picker-del:hover{background:#e74c3c}
+</style>
 </head>
 <body>
 
@@ -157,7 +176,12 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         </div>
         <div class="grid2">
           <div class="field"><label>Tag <span class="hint" style="display:inline">separati da virgola</span></label><input type="text" id="tags" placeholder="jekyll, web"></div>
-          <div class="field"><label>Immagine teaser (URL)</label><input type="text" id="teaser" placeholder="https://..."></div>
+          <div class="field"><label>Immagine teaser (URL)</label>
+            <div style="display:flex;gap:.5em">
+              <input type="text" id="teaser" placeholder="https://..." style="flex:1">
+              <button type="button" class="btn btn-secondary" style="flex-shrink:0" onclick="apriSelettoreImmagini('teaser','posts')" title="Sfoglia galleria immagini">📁</button>
+            </div>
+          </div>
         </div>
         <div class="field"><label>Excerpt SEO</label><input type="text" id="excerpt" placeholder="Descrizione breve per Google (max 160 caratteri)"></div>
         <div class="field">
@@ -574,7 +598,12 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <div class="field"><label>SKU</label><input type="text" id="prod-sku" placeholder="PROD-001"></div>
         </div>
         <div class="field"><label>Tipo prodotto</label><select id="prod-tipo"><option value="fisico">📦 Fisico (richiede indirizzo di spedizione)</option><option value="digitale">💾 Digitale (richiede solo email)</option></select></div>
-        <div class="field"><label>Immagine (URL)</label><input type="text" id="prod-immagine" placeholder="https://..."></div>
+        <div class="field"><label>Immagine (URL)</label>
+          <div style="display:flex;gap:.5em">
+            <input type="text" id="prod-immagine" placeholder="https://..." style="flex:1">
+            <button type="button" class="btn btn-secondary" style="flex-shrink:0" onclick="apriSelettoreImmagini('prod-immagine','products')" title="Sfoglia galleria immagini">📁</button>
+          </div>
+        </div>
         <div class="field"><label>Descrizione breve <span class="hint" style="display:inline">max 160 caratteri — mostrata nella lista categoria</span></label><input type="text" id="prod-description" placeholder="Breve descrizione del prodotto..."></div>
         <div class="field"><label>Descrizione completa</label><textarea class="sm" id="prod-corpo" placeholder="Descrizione lunga del prodotto..."></textarea></div>
         <div class="btn-group">
@@ -610,6 +639,26 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
     </div>
 
   </main>
+</div>
+
+<!-- SELETTORE IMMAGINI — modal riutilizzabile, vedi apriSelettoreImmagini() -->
+<div id="img-picker-overlay" class="img-picker-overlay" style="display:none">
+  <div class="img-picker-box">
+    <div class="img-picker-head">
+      <span id="img-picker-title">Seleziona immagine</span>
+      <button class="img-picker-close" onclick="chiudiSelettoreImmagini()">✕</button>
+    </div>
+    <div class="img-picker-upload">
+      <label class="img-picker-upload-btn">
+        ⬆️ Carica nuova immagine
+        <input type="file" id="img-picker-file" accept="image/*" style="display:none" onchange="caricaImmagineGalleria(this)">
+      </label>
+      <span id="img-picker-upload-msg" class="img-picker-upload-msg"></span>
+    </div>
+    <div id="img-picker-grid" class="img-picker-grid">
+      <em style="color:#bbb;font-size:13px">Caricamento galleria...</em>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -800,6 +849,101 @@ async function ghPut(path,msg,content,sha){
   const body={message:msg,content:enc(content)};if(sha)body.sha=sha;
   return fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{method:'PUT',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
 }
+
+// ============ SELETTORE IMMAGINI — modulo riutilizzabile ============
+// Uso: apriSelettoreImmagini('id-campo-input', 'products')  oppure 'posts'
+// Al click su un'immagine della galleria, riempie automaticamente il campo input indicato con l'URL raw.
+// Estendibile: basta passare una nuova sottocartella (es. 'avatar') per usarlo altrove — crea la cartella al primo upload.
+let _imgPickerTarget=null;
+let _imgPickerFolder=null;
+
+function apriSelettoreImmagini(targetInputId, sottocartella){
+  _imgPickerTarget=targetInputId;
+  _imgPickerFolder=sottocartella||'products';
+  document.getElementById('img-picker-title').textContent='Seleziona immagine ('+_imgPickerFolder+')';
+  document.getElementById('img-picker-overlay').style.display='flex';
+  document.getElementById('img-picker-upload-msg').textContent='';
+  caricaGalleriaImmagini();
+}
+
+function chiudiSelettoreImmagini(){
+  document.getElementById('img-picker-overlay').style.display='none';
+  _imgPickerTarget=null;
+}
+
+async function caricaGalleriaImmagini(){
+  const grid=document.getElementById('img-picker-grid');
+  grid.innerHTML='<em style="color:#bbb;font-size:13px">Caricamento galleria...</em>';
+  if(!tok()){grid.innerHTML='<em style="color:#bbb;font-size:13px">Token mancante.</em>';return;}
+  const path=`assets/images/${_imgPickerFolder}`;
+  const res=await ghGet(path);
+  if(!res.ok){
+    grid.innerHTML='<em style="color:#bbb;font-size:13px">Nessuna immagine ancora. Caricane una qui sopra.</em>';
+    return;
+  }
+  const files=(await res.json()).filter(f=>f.type==='file' && /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name));
+  if(files.length===0){
+    grid.innerHTML='<em style="color:#bbb;font-size:13px">Nessuna immagine ancora. Caricane una qui sopra.</em>';
+    return;
+  }
+  grid.innerHTML=files.map(f=>`
+    <div class="img-picker-item" onclick="selezionaImmagineGalleria('${f.download_url}')">
+      <img src="${f.download_url}" alt="${f.name}" loading="lazy">
+      <button class="img-picker-del" onclick="event.stopPropagation();eliminaImmagineGalleria('${f.path}','${f.sha}','${f.name}')">✕</button>
+    </div>
+  `).join('');
+}
+
+function selezionaImmagineGalleria(url){
+  if(_imgPickerTarget){
+    document.getElementById(_imgPickerTarget).value=url;
+  }
+  chiudiSelettoreImmagini();
+}
+
+async function caricaImmagineGalleria(inputEl){
+  const file=inputEl.files[0];
+  if(!file)return;
+  const msgEl=document.getElementById('img-picker-upload-msg');
+  msgEl.textContent='⏳ Caricamento...';
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const base64=e.target.result.split(',')[1]; // FileReader.readAsDataURL da' gia' base64 puro dopo la virgola
+    const ext=file.name.split('.').pop().toLowerCase();
+    const safeName=file.name.replace(/[^a-zA-Z0-9.\-_]/g,'-').toLowerCase();
+    const fname=`${Date.now()}-${safeName}`;
+    const path=`assets/images/${_imgPickerFolder}/${fname}`;
+    try{
+      const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+        method:'PUT',
+        headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
+        body:JSON.stringify({message:`Upload immagine: ${fname}`,content:base64})
+      });
+      if(res.ok){
+        msgEl.textContent='✅ Caricata!';
+        inputEl.value='';
+        setTimeout(()=>caricaGalleriaImmagini(),1200);
+      }else{
+        const j=await res.json();
+        msgEl.textContent='❌ '+(j.message||'Errore upload');
+      }
+    }catch(err){
+      msgEl.textContent='❌ Errore di rete';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function eliminaImmagineGalleria(path, sha, nome){
+  if(!confirm(`Eliminare "${nome}"? L'immagine sparira' anche da eventuali articoli/prodotti che la usano.`))return;
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+    method:'DELETE',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
+    body:JSON.stringify({message:`Elimina immagine ${path}`,sha})
+  });
+  if(res.ok)caricaGalleriaImmagini();
+  else alert('Errore durante l\'eliminazione.');
+}
+
 
 // CATEGORIE
 // CATEGORIE
