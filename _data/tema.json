@@ -1,10 +1,10 @@
 {
-  "accent": "#6c63ff",
+  "accent": "#e74c3c",
   "accent_dark": "#463dd9",
   "nav_bg": "#ffffff",
   "nav_text": "#111111",
   "nav_hover": "#444444",
   "body_bg": "#ffffff",
   "text": "#3a3a3a",
-  "link": "#6c63ff"
+  "link": "#e74c3c"
 }
