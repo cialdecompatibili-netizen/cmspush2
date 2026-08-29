@@ -10,5 +10,9 @@
   {
     "nome": "mauritius",
     "descrizione": "descrizione categoria mauritius"
+  },
+  {
+    "nome": "test-api",
+    "descrizione": "Categoria di test creata via script API"
   }
 ]
